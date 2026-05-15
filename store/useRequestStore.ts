@@ -10,6 +10,14 @@ export interface KeyValue {
   enabled: boolean;
 }
 
+interface RequestResponse {
+  status: number;
+  statusText: string;
+  headers: Record<string, string>;
+  data: any;
+  time: number;
+}
+
 export interface RequestHistoryItem {
   id: string;
   method: HttpMethod;
@@ -19,14 +27,7 @@ export interface RequestHistoryItem {
   body: string;
   timestamp: number;
   status?: number;
-}
-
-interface RequestResponse {
-  status: number;
-  statusText: string;
-  headers: Record<string, string>;
-  data: any;
-  time: number;
+  response?: RequestResponse; // Added response to history
 }
 
 interface RequestState {
@@ -144,27 +145,30 @@ export const useRequestStore = create<RequestState>()(
           const endTime = Date.now();
 
           if (proxyResponse.ok) {
+            const newResponse = {
+              status: result.status,
+              statusText: result.statusText,
+              headers: result.headers,
+              data: result.data,
+              time: endTime - startTime
+            };
+
             set({ 
-              response: {
-                status: result.status,
-                statusText: result.statusText,
-                headers: result.headers,
-                data: result.data,
-                time: endTime - startTime
-              },
+              response: newResponse,
               isLoading: false,
               history: [
                 {
                   id: generateId(),
                   method,
-                  url, // Save the original URL without query params added by us
+                  url,
                   headers: JSON.parse(JSON.stringify(headers)),
                   params: JSON.parse(JSON.stringify(params)),
                   body,
                   timestamp: Date.now(),
-                  status: result.status
+                  status: result.status,
+                  response: newResponse // Save response in history
                 },
-                ...get().history.slice(0, 49) // Keep last 50 items
+                ...get().history.slice(0, 49)
               ]
             });
           } else {
@@ -182,7 +186,7 @@ export const useRequestStore = create<RequestState>()(
           headers: JSON.parse(JSON.stringify(item.headers || [])),
           params: JSON.parse(JSON.stringify(item.params || [])),
           body: item.body || '',
-          response: null,
+          response: item.response ? JSON.parse(JSON.stringify(item.response)) : null, // Restore response
           error: null
         });
       },
@@ -192,7 +196,6 @@ export const useRequestStore = create<RequestState>()(
     {
       name: 'apicred-storage',
       storage: createJSONStorage(() => localStorage),
-      // Persist active request state AND history
       partialize: (state) => ({ 
         method: state.method,
         url: state.url,
