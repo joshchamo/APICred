@@ -14,6 +14,9 @@ export interface RequestHistoryItem {
   id: string;
   method: HttpMethod;
   url: string;
+  headers: KeyValue[];
+  params: KeyValue[];
+  body: string;
   timestamp: number;
   status?: number;
 }
@@ -154,7 +157,10 @@ export const useRequestStore = create<RequestState>()(
                 {
                   id: generateId(),
                   method,
-                  url: fullUrl,
+                  url, // Save the original URL without query params added by us
+                  headers: JSON.parse(JSON.stringify(headers)),
+                  params: JSON.parse(JSON.stringify(params)),
+                  body,
                   timestamp: Date.now(),
                   status: result.status
                 },
@@ -170,10 +176,12 @@ export const useRequestStore = create<RequestState>()(
       },
 
       loadFromHistory: (item) => {
-        // Simple loading, might need more complexity for full request state
         set({ 
           method: item.method, 
           url: item.url,
+          headers: JSON.parse(JSON.stringify(item.headers || [])),
+          params: JSON.parse(JSON.stringify(item.params || [])),
+          body: item.body || '',
           response: null,
           error: null
         });
@@ -184,7 +192,15 @@ export const useRequestStore = create<RequestState>()(
     {
       name: 'apicred-storage',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ history: state.history }), // Only persist history
+      // Persist active request state AND history
+      partialize: (state) => ({ 
+        method: state.method,
+        url: state.url,
+        headers: state.headers,
+        params: state.params,
+        body: state.body,
+        history: state.history 
+      }),
     }
   )
 );
