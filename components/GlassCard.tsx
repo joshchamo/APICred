@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 interface GlassCardProps {
-  children: ReactNode;
+  children?: ReactNode;
   className?: string;
   animate?: boolean;
 }
