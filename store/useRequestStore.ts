@@ -48,6 +48,7 @@ interface RequestState {
   isLoading: boolean;
   response: RequestResponse | null;
   error: string | null;
+  isSidebarOpen: boolean; // Added sidebar toggle state
   
   // History
   history: RequestHistoryItem[];
@@ -62,6 +63,7 @@ interface RequestState {
   setHeaders: (headers: KeyValue[]) => void;
   setParams: (params: KeyValue[]) => void;
   setBody: (body: string) => void;
+  setSidebarOpen: (isOpen: boolean) => void; // Added sidebar action
   
   addHeader: () => void;
   removeHeader: (id: string) => void;
@@ -107,6 +109,7 @@ export const useRequestStore = create<RequestState>()(
       isLoading: false,
       response: null,
       error: null,
+      isSidebarOpen: true, // Default to open
       history: [],
       environments: [],
       activeEnvId: null,
@@ -116,6 +119,7 @@ export const useRequestStore = create<RequestState>()(
       setHeaders: (headers) => set({ headers }),
       setParams: (params) => set({ params }),
       setBody: (body) => set({ body }),
+      setSidebarOpen: (isSidebarOpen) => set({ isSidebarOpen }),
 
       addHeader: () => set((state) => ({ 
         headers: [...state.headers, { id: generateId(), key: '', value: '', enabled: true }] 
@@ -161,7 +165,6 @@ export const useRequestStore = create<RequestState>()(
         const startTime = Date.now();
 
         try {
-          // Process URL and Query Params with variable replacement
           const processedUrl = processText(url);
           const enabledParams = params.filter(p => p.enabled && p.key);
           const queryString = enabledParams.length > 0 
@@ -174,13 +177,11 @@ export const useRequestStore = create<RequestState>()(
           
           const fullUrl = processedUrl.includes('?') ? `${processedUrl}&${queryString.slice(1)}` : `${processedUrl}${queryString}`;
 
-          // Process Headers
           const headerObj: Record<string, string> = {};
           headers.filter(h => h.enabled && h.key).forEach(h => {
             headerObj[processText(h.key)] = processText(h.value);
           });
 
-          // Process Body
           const processedBody = processText(body);
 
           const proxyResponse = await fetch('/api/proxy', {
@@ -257,7 +258,8 @@ export const useRequestStore = create<RequestState>()(
         body: state.body,
         history: state.history,
         environments: state.environments,
-        activeEnvId: state.activeEnvId
+        activeEnvId: state.activeEnvId,
+        isSidebarOpen: state.isSidebarOpen // Persist sidebar state
       }),
     }
   )

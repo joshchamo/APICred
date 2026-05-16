@@ -45,7 +45,7 @@ export default function EnvironmentManager() {
 
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-[10vh]">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -54,7 +54,7 @@ export default function EnvironmentManager() {
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
             
-            <GlassCard className="w-full max-w-2xl relative z-10 max-h-[80vh] flex flex-col p-0 overflow-hidden border-white/20">
+            <GlassCard className="w-full max-w-2xl relative z-10 max-h-[75vh] flex flex-col p-0 overflow-hidden border-white/20">
               <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/5">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-primary/20 rounded-lg">

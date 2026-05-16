@@ -2,9 +2,12 @@ import RequestPanel from '@/components/RequestPanel';
 import ResponsePanel from '@/components/ResponsePanel';
 import HistorySidebar from '@/components/HistorySidebar';
 import EnvironmentManager from '@/components/EnvironmentManager';
-import { Zap } from 'lucide-react';
+import { Zap, Menu } from 'lucide-react';
+import { useRequestStore } from '@/store/useRequestStore';
 
 export default function Home() {
+  const { isSidebarOpen, setSidebarOpen } = useRequestStore();
+
   return (
     <main className="flex h-screen overflow-hidden selection:bg-primary/30">
       {/* Background Orbs */}
@@ -18,26 +21,34 @@ export default function Home() {
 
       <div className="flex-1 flex flex-col overflow-y-auto custom-scrollbar">
         {/* Header */}
-        <header className="px-8 py-6 flex items-center justify-between border-b border-white/5 sticky top-0 z-10 backdrop-blur-md bg-black/10">
+        <header className="px-4 lg:px-8 py-6 flex items-center justify-between border-b border-white/5 sticky top-0 z-10 backdrop-blur-md bg-black/10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.5)]">
-              <Zap className="w-6 h-6 text-white fill-white" />
+            {!isSidebarOpen && (
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="p-2 hover:bg-white/5 rounded-lg text-white/40 hover:text-white transition-all mr-2"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+            )}
+            <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.5)]">
+              <Zap className="w-5 h-5 lg:w-6 lg:h-6 text-white fill-white" />
             </div>
             <div>
-              <h1 className="text-xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
+              <h1 className="text-lg lg:text-xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
                 ApiCred
               </h1>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-white/30 font-bold">
+              <p className="text-[9px] lg:text-[10px] uppercase tracking-[0.2em] text-white/30 font-bold">
                 Professional API Testing
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 lg:gap-6">
             <EnvironmentManager />
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white/40">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white/40">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-              SYSTEM OPERATIONAL
+              OPERATIONAL
             </div>
           </div>
         </header>
