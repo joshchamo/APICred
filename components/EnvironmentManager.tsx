@@ -16,11 +16,11 @@ export default function EnvironmentManager() {
 
   useEffect(() => {
     if (isOpen) {
-      console.log('ApiCred v1.0.6: Panel Opened. Environments:', environments.length);
+      console.log('ApiCred v1.0.7: Panel Opened. Environments:', environments.length);
       if (environments.length > 0) {
         const currentEnv = environments.find(e => e.id === editingId);
         if (!editingId || !currentEnv) {
-          console.log('ApiCred v1.0.6: Auto-selecting first environment:', environments[0].id);
+          console.log('ApiCred v1.0.7: Auto-selecting first environment:', environments[0].id);
           setEditingId(environments[0].id);
         }
       }

@@ -46,7 +46,7 @@ export default function Home() {
                   ApiCred
                 </h1>
                 <span className="px-1.5 py-0.5 rounded-md bg-primary/20 text-primary text-[8px] font-black uppercase tracking-tighter border border-primary/20">
-                  v1.0.5
+                  v1.0.7
                 </span>
               </div>
               <p className="text-[9px] lg:text-[10px] uppercase tracking-[0.2em] text-white/30 font-bold">
@@ -89,7 +89,7 @@ export default function Home() {
             Built with Next.js • Zustand • Tailwind CSS
           </p>
           <p className="text-[8px] text-white/10 mt-2 uppercase tracking-tight">
-            v1.0.4 • Last Update: {new Date().toLocaleTimeString()}
+            v1.0.7 • Last Update: {new Date().toLocaleTimeString()}
           </p>
         </footer>
       </div>
