@@ -14,12 +14,12 @@ export default function EnvironmentManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const hasHydrated = useHasHydrated();
 
-  // Auto-select first environment if editingId is null
+  // Ensure an environment is selected if any exist
   useEffect(() => {
-    if (environments.length > 0 && !editingId) {
+    if (isOpen && environments.length > 0 && !editingId) {
       setEditingId(environments[0].id);
     }
-  }, [environments, editingId]);
+  }, [isOpen, environments, editingId]);
 
   if (!hasHydrated) return null;
 
@@ -50,7 +50,6 @@ export default function EnvironmentManager() {
               ? "bg-primary/20 border-primary text-primary" 
               : "bg-white/5 border-white/10 text-white/40 hover:text-white hover:bg-white/10"
           )}
-          title="Manage Environments"
         >
           <Settings className="w-3.5 h-3.5" />
         </button>
@@ -64,51 +63,53 @@ export default function EnvironmentManager() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px]"
+              className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm"
             />
             
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-slate-900 shadow-2xl border-l border-white/10 flex flex-col"
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="fixed inset-y-0 right-0 z-[101] w-full max-w-md bg-[#0f172a] shadow-2xl border-l border-white/10 flex flex-col h-full"
             >
               {/* Header */}
-              <div className="p-6 border-b border-white/10 flex items-center justify-between bg-black/20">
+              <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/5 shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-primary/20 rounded-lg">
                     <Settings className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold">Environments</h2>
-                    <p className="text-[10px] text-white/40 uppercase tracking-widest font-medium">Variable Management</p>
+                    <h2 className="text-lg font-bold text-white">Environments</h2>
+                    <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Global Variables</p>
                   </div>
                 </div>
-                <button 
-                  onClick={() => setIsOpen(false)} 
-                  className="p-2 hover:bg-white/10 rounded-full text-white/20 hover:text-white transition-all"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      const name = prompt('Environment Name') || 'New Environment';
+                      addEnvironment(name);
+                    }}
+                    className="p-2 bg-primary/10 hover:bg-primary/20 rounded-lg text-primary transition-all"
+                    title="Add Environment"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                  <button 
+                    onClick={() => setIsOpen(false)} 
+                    className="p-2 hover:bg-white/10 rounded-lg text-white/20 hover:text-white transition-all"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
-              <div className="flex-1 flex flex-col overflow-hidden">
-                {/* Tabs / List of Environments */}
-                <div className="p-4 border-b border-white/10 bg-white/5">
+              {/* Scrollable Content Container */}
+              <div className="flex-1 flex flex-col min-h-0">
+                {/* Environment Tabs */}
+                <div className="p-4 border-b border-white/10 bg-black/20 shrink-0">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Saved Environments</span>
-                    <button
-                      onClick={() => {
-                        const name = prompt('Environment Name') || 'New Environment';
-                        const id = Math.random().toString(36).substring(2, 9);
-                        addEnvironment(name);
-                        setEditingId(id); // Attempt to select it (Zustand might need a tick)
-                      }}
-                      className="text-[10px] font-bold text-primary hover:text-white transition-colors bg-primary/10 px-2 py-1 rounded"
-                    >
-                      + ADD NEW
-                    </button>
+                    <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Saved Environments</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {environments.map(env => (
@@ -118,27 +119,29 @@ export default function EnvironmentManager() {
                         className={cn(
                           "px-3 py-1.5 rounded-lg text-xs font-bold transition-all border",
                           editingId === env.id 
-                            ? "bg-primary border-primary text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]" 
-                            : "bg-white/5 border-white/5 text-white/40 hover:border-white/20 hover:text-white"
+                            ? "bg-primary border-primary text-white" 
+                            : "bg-white/5 border-white/10 text-white/40 hover:text-white hover:bg-white/10"
                         )}
                       >
                         {env.name}
                       </button>
                     ))}
                     {environments.length === 0 && (
-                      <p className="text-[10px] text-white/20 italic">No environments created yet.</p>
+                      <div className="w-full py-4 text-center border border-dashed border-white/10 rounded-xl">
+                        <p className="text-[10px] text-white/20">No environments found</p>
+                      </div>
                     )}
                   </div>
                 </div>
 
-                {/* Editor Area */}
+                {/* Editor Section */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
-                  {editingId ? (
-                    <div className="space-y-8">
-                      {/* Env Title & Delete */}
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex-1">
-                          <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest block mb-1">Name</span>
+                  {editingId && environments.find(e => e.id === editingId) ? (
+                    <div className="space-y-8 pb-10">
+                      {/* Name Input */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Environment Name</label>
+                        <div className="flex gap-2">
                           <input
                             type="text"
                             value={environments.find(e => e.id === editingId)?.name || ''}
@@ -146,29 +149,28 @@ export default function EnvironmentManager() {
                               const env = environments.find(ev => ev.id === editingId);
                               if (env) updateEnvironment(editingId, e.target.value, env.variables);
                             }}
-                            className="bg-white/5 w-full px-3 py-2 rounded-lg text-lg font-bold focus:outline-none border border-white/10 focus:border-primary/50 transition-all"
+                            className="flex-1 bg-white/5 px-4 py-2.5 rounded-xl text-lg font-bold focus:outline-none border border-white/10 focus:border-primary/50 transition-all"
                           />
+                          <button
+                            onClick={() => {
+                              if (confirm('Delete this environment?')) {
+                                removeEnvironment(editingId);
+                                setEditingId(null);
+                              }
+                            }}
+                            className="p-3 text-white/20 hover:text-rose-400 hover:bg-rose-400/10 rounded-xl transition-all border border-transparent hover:border-rose-400/20"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
-                        <button
-                          onClick={() => {
-                            if (confirm('Delete this environment?')) {
-                              removeEnvironment(editingId);
-                              setEditingId(null);
-                            }
-                          }}
-                          className="mt-6 p-2 text-white/20 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
-                          title="Delete Environment"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
                       </div>
 
-                      {/* Variables Editor */}
+                      {/* Variables List */}
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Global Variables</h3>
+                          <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Variables</h3>
                         </div>
-                        <div className="bg-black/20 rounded-2xl p-4 border border-white/5">
+                        <div className="bg-white/5 rounded-2xl p-2 border border-white/5">
                           <KeyValueEditor
                             items={environments.find(e => e.id === editingId)?.variables || []}
                             onAdd={() => {
@@ -189,35 +191,32 @@ export default function EnvironmentManager() {
                           />
                         </div>
                       </div>
-                      
-                      {/* Usage Tip */}
-                      <div className="p-4 bg-sky-500/5 rounded-2xl border border-sky-500/10 flex gap-3">
-                        <Info className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
-                        <p className="text-[10px] text-sky-400/80 leading-relaxed font-medium">
-                          Defined variables can be injected into any field using the <span className="text-white font-bold">{"{{key}}"}</span> syntax. 
-                          <br/>Example: <span className="text-white font-mono">{"{{base_url}}"}</span>/users
+
+                      {/* Tip */}
+                      <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex gap-3">
+                        <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                        <p className="text-[10px] text-white/50 leading-relaxed font-medium">
+                          Use <span className="text-white font-bold">{"{{variable_name}}"}</span> anywhere in your requests. Values are automatically injected from the active environment.
                         </p>
                       </div>
                     </div>
                   ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-white/20 text-center space-y-6 px-10">
-                      <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center border border-white/5 animate-pulse">
-                        <Settings className="w-10 h-10 opacity-20" />
+                    <div className="h-full flex flex-col items-center justify-center text-center px-10">
+                      <div className="w-20 h-20 rounded-[2rem] bg-white/5 flex items-center justify-center border border-white/10 mb-6 shadow-2xl">
+                        <Plus className="w-8 h-8 text-white/10" />
                       </div>
-                      <div className="space-y-2">
-                        <p className="text-sm font-bold text-white/40">No Environment Selected</p>
-                        <p className="text-[10px] leading-relaxed">
-                          Click on a saved environment above or create a new one to manage your variables.
-                        </p>
-                      </div>
+                      <h3 className="text-sm font-bold text-white mb-2">Ready to scale?</h3>
+                      <p className="text-xs text-white/30 leading-relaxed mb-8">
+                        Create environments to manage different sets of variables for development, staging, and production.
+                      </p>
                       <button
                         onClick={() => {
                           const name = prompt('Environment Name') || 'New Environment';
                           addEnvironment(name);
                         }}
-                        className="px-6 py-2 bg-primary/20 border border-primary/40 rounded-full text-xs font-bold text-primary hover:bg-primary hover:text-white transition-all"
+                        className="px-8 py-3 bg-primary rounded-xl text-xs font-bold text-white hover:shadow-[0_0_20px_rgba(139,92,246,0.4)] transition-all active:scale-95"
                       >
-                        Create First Environment
+                        Create Your First Environment
                       </button>
                     </div>
                   )}
