@@ -4,7 +4,6 @@ import GlassCard from './GlassCard';
 import KeyValueEditor from './KeyValueEditor';
 import { Send, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useHasHydrated } from '@/hooks/useHasHydrated';
 
 const METHODS: HttpMethod[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
 type Tab = 'params' | 'headers' | 'body';
@@ -16,13 +15,13 @@ export default function RequestPanel() {
     headers, addHeader, removeHeader, updateHeader,
     params, addParam, removeParam, updateParam,
     body, setBody,
-    sendRequest, isLoading 
+    sendRequest, isLoading,
+    _hasHydrated
   } = useRequestStore();
 
   const [activeTab, setActiveTab] = useState<Tab>('params');
-  const hasHydrated = useHasHydrated();
 
-  if (!hasHydrated) return <GlassCard className="h-[400px] animate-pulse bg-white/5" />;
+  if (!_hasHydrated) return <GlassCard className="h-[400px] animate-pulse bg-white/5" />;
 
   return (
     <GlassCard className="flex flex-col gap-6">

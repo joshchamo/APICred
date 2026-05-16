@@ -5,10 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useHasHydrated } from '@/hooks/useHasHydrated';
 
 export default function HistorySidebar() {
-  const { history, loadFromHistory, clearHistory, isSidebarOpen, setSidebarOpen } = useRequestStore();
-  const hasHydrated = useHasHydrated();
+  const { history, loadFromHistory, clearHistory, isSidebarOpen, setSidebarOpen, _hasHydrated } = useRequestStore();
 
-  if (!hasHydrated) return null;
+  if (!_hasHydrated) return null;
 
   return (
     <AnimatePresence mode="wait">

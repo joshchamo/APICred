@@ -6,16 +6,14 @@ import { Settings, Plus, Trash2, X, Check, ChevronRight, Info, AlertTriangle, Sh
 import KeyValueEditor from './KeyValueEditor';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useHasHydrated } from '@/hooks/useHasHydrated';
 
 interface EnvironmentManagerProps {
   isPermanent?: boolean;
 }
 
 export default function EnvironmentManager({ isPermanent = false }: EnvironmentManagerProps) {
-  const { environments, addEnvironment, removeEnvironment, updateEnvironment, activeEnvId, setActiveEnv } = useRequestStore();
+  const { environments, addEnvironment, removeEnvironment, updateEnvironment, activeEnvId, setActiveEnv, _hasHydrated } = useRequestStore();
   const [editingId, setEditingId] = useState<string | null>(null);
-  const hasHydrated = useHasHydrated();
 
   // Ensure an environment is selected for editing if they exist
   useEffect(() => {
@@ -41,7 +39,7 @@ export default function EnvironmentManager({ isPermanent = false }: EnvironmentM
 
   const selectedEnv = environments.find(e => e.id === editingId) || (environments.length > 0 ? environments[0] : null);
 
-  if (!hasHydrated) return null;
+  if (!_hasHydrated) return null;
 
   return (
     <div className="flex flex-col h-full bg-[#020617]/50">

@@ -2,13 +2,11 @@ import { useRequestStore } from '@/store/useRequestStore';
 import GlassCard from './GlassCard';
 import { Clock, CheckCircle, AlertCircle, Terminal } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useHasHydrated } from '@/hooks/useHasHydrated';
 
 export default function ResponsePanel() {
-  const { response, error, isLoading } = useRequestStore();
-  const hasHydrated = useHasHydrated();
+  const { response, error, isLoading, _hasHydrated } = useRequestStore();
 
-  if (!hasHydrated) return null;
+  if (!_hasHydrated) return null;
 
   if (isLoading) {
     return (

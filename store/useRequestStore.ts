@@ -48,7 +48,8 @@ interface RequestState {
   isLoading: boolean;
   response: RequestResponse | null;
   error: string | null;
-  isSidebarOpen: boolean; // Added sidebar toggle state
+  isSidebarOpen: boolean;
+  _hasHydrated: boolean; // Native hydration tracking
   
   // History
   history: RequestHistoryItem[];
@@ -63,7 +64,8 @@ interface RequestState {
   setHeaders: (headers: KeyValue[]) => void;
   setParams: (params: KeyValue[]) => void;
   setBody: (body: string) => void;
-  setSidebarOpen: (isOpen: boolean) => void; // Added sidebar action
+  setSidebarOpen: (isOpen: boolean) => void;
+  setHasHydrated: (val: boolean) => void; // Hydration action
   
   addHeader: () => void;
   removeHeader: (id: string) => void;
@@ -109,7 +111,8 @@ export const useRequestStore = create<RequestState>()(
       isLoading: false,
       response: null,
       error: null,
-      isSidebarOpen: true, // Default to open
+      isSidebarOpen: true,
+      _hasHydrated: false,
       history: [],
       environments: [],
       activeEnvId: null,
@@ -120,6 +123,7 @@ export const useRequestStore = create<RequestState>()(
       setParams: (params) => set({ params }),
       setBody: (body) => set({ body }),
       setSidebarOpen: (isSidebarOpen) => set({ isSidebarOpen }),
+      setHasHydrated: (_hasHydrated) => set({ _hasHydrated }),
 
       addHeader: () => set((state) => ({ 
         headers: [...state.headers, { id: generateId(), key: '', value: '', enabled: true }] 
@@ -207,7 +211,7 @@ export const useRequestStore = create<RequestState>()(
               time: endTime - startTime
             };
 
-            set({ 
+            set((state) => ({ 
               response: newResponse,
               isLoading: false,
               history: [
@@ -222,9 +226,9 @@ export const useRequestStore = create<RequestState>()(
                   status: result.status,
                   response: newResponse
                 },
-                ...get().history.slice(0, 49)
+                ...state.history.slice(0, 49)
               ]
-            });
+            }));
           } else {
             set({ error: result.error || 'Failed to execute request', isLoading: false });
           }
@@ -241,7 +245,8 @@ export const useRequestStore = create<RequestState>()(
           params: JSON.parse(JSON.stringify(item.params || [])),
           body: item.body || '',
           response: item.response ? JSON.parse(JSON.stringify(item.response)) : null,
-          error: null
+          error: null,
+          isLoading: false // Reset loading state when loading from history
         });
       },
 
@@ -250,6 +255,9 @@ export const useRequestStore = create<RequestState>()(
     {
       name: 'apicred-storage',
       storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
       partialize: (state) => ({ 
         method: state.method,
         url: state.url,
@@ -259,7 +267,7 @@ export const useRequestStore = create<RequestState>()(
         history: state.history,
         environments: state.environments,
         activeEnvId: state.activeEnvId,
-        isSidebarOpen: state.isSidebarOpen // Persist sidebar state
+        isSidebarOpen: state.isSidebarOpen
       }),
     }
   )
