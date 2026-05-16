@@ -1,12 +1,25 @@
+'use client';
+
 import { useRequestStore } from '@/store/useRequestStore';
 import GlassCard from './GlassCard';
-import { Clock, CheckCircle, AlertCircle, Terminal, Copy, ClipboardCheck } from 'lucide-react';
+import { Clock, CheckCircle, AlertCircle, Terminal, Copy, ClipboardCheck, Code2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-json';
+// We'll use a basic theme approach or custom CSS in globals
+import 'prismjs/themes/prism-tomorrow.css'; 
 
 export default function ResponsePanel() {
   const { response, error, isLoading, _hasHydrated } = useRequestStore();
   const [copied, setCopied] = useState(false);
+  const codeRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (response && codeRef.current) {
+      Prism.highlightElement(codeRef.current);
+    }
+  }, [response, isLoading]);
 
   const handleCopy = () => {
     if (!response) return;
@@ -103,7 +116,8 @@ export default function ResponsePanel() {
           </div>
         </div>
 
-        <div className="px-5 py-2.5 bg-white/5 rounded-xl border border-white/10 text-[10px] font-black text-white/40 uppercase tracking-widest shadow-inner">
+        <div className="flex items-center gap-2 px-5 py-2.5 bg-white/5 rounded-xl border border-white/10 text-[10px] font-black text-white/40 uppercase tracking-widest shadow-inner">
+          <Code2 className="w-3.5 h-3.5 text-primary" />
           {isJson ? 'JSON Content' : 'Raw Text / HTML'}
         </div>
       </div>
@@ -129,12 +143,17 @@ export default function ResponsePanel() {
           </button>
         </div>
         
-        <div className="flex-1 bg-black/60 border border-white/10 rounded-[2rem] p-8 font-mono text-sm overflow-auto custom-scrollbar shadow-2xl relative">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
-          <pre className="text-emerald-400/80 whitespace-pre-wrap leading-relaxed">
-            {isJson 
-              ? JSON.stringify(response.data, null, 2) 
-              : response.data}
+        <div className="flex-1 bg-[#0f172a] border border-white/10 rounded-[2rem] p-8 font-mono text-sm overflow-auto custom-scrollbar shadow-2xl relative">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+          <pre className="!bg-transparent !m-0 !p-0">
+            <code 
+              ref={codeRef} 
+              className={cn("language-json", !isJson && "language-none")}
+            >
+              {isJson 
+                ? JSON.stringify(response.data, null, 2) 
+                : response.data}
+            </code>
           </pre>
         </div>
       </div>
