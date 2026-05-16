@@ -35,7 +35,7 @@ export default function KeyValueEditor({ items, onAdd, onRemove, onUpdate }: Key
           />
           <button
             onClick={() => onRemove(item.id)}
-            className="p-1.5 text-white/40 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+            className="p-1.5 text-white/20 hover:text-rose-400 transition-colors"
           >
             <Trash2 className="w-4 h-4" />
           </button>
