@@ -1,12 +1,14 @@
-'use client';
-
 import { useRequestStore, RequestHistoryItem } from '@/store/useRequestStore';
 import { History, Trash2, Clock, ExternalLink, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useHasHydrated } from '@/hooks/useHasHydrated';
 
 export default function HistorySidebar() {
   const { history, loadFromHistory, clearHistory, isSidebarOpen, setSidebarOpen } = useRequestStore();
+  const hasHydrated = useHasHydrated();
+
+  if (!hasHydrated) return null;
 
   return (
     <AnimatePresence mode="wait">

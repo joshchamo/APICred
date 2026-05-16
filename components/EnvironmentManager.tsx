@@ -1,19 +1,20 @@
-'use client';
-
-import { useState } from 'react';
 import { useRequestStore, Environment, KeyValue } from '@/store/useRequestStore';
 import { Settings, Plus, Trash2, X, Check } from 'lucide-react';
 import GlassCard from './GlassCard';
 import KeyValueEditor from './KeyValueEditor';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useHasHydrated } from '@/hooks/useHasHydrated';
 
 export default function EnvironmentManager() {
   const [isOpen, setIsOpen] = useState(false);
   const { environments, addEnvironment, removeEnvironment, updateEnvironment, activeEnvId, setActiveEnv } = useRequestStore();
   const [editingId, setEditingId] = useState<string | null>(null);
+  const hasHydrated = useHasHydrated();
 
   const activeEnv = environments.find(e => e.id === activeEnvId) || null;
+
+  if (!hasHydrated) return null;
 
   return (
     <>

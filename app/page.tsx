@@ -1,12 +1,18 @@
+'use client';
+
 import RequestPanel from '@/components/RequestPanel';
 import ResponsePanel from '@/components/ResponsePanel';
 import HistorySidebar from '@/components/HistorySidebar';
 import EnvironmentManager from '@/components/EnvironmentManager';
 import { Zap, Menu } from 'lucide-react';
 import { useRequestStore } from '@/store/useRequestStore';
+import { useHasHydrated } from '@/hooks/useHasHydrated';
 
 export default function Home() {
   const { isSidebarOpen, setSidebarOpen } = useRequestStore();
+  const hasHydrated = useHasHydrated();
+
+  if (!hasHydrated) return null;
 
   return (
     <main className="flex h-screen overflow-hidden selection:bg-primary/30">

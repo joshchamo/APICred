@@ -1,11 +1,9 @@
-'use client';
-
-import { useState } from 'react';
 import { useRequestStore, HttpMethod } from '@/store/useRequestStore';
 import GlassCard from './GlassCard';
 import KeyValueEditor from './KeyValueEditor';
 import { Send, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useHasHydrated } from '@/hooks/useHasHydrated';
 
 const METHODS: HttpMethod[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
 type Tab = 'params' | 'headers' | 'body';
@@ -21,6 +19,9 @@ export default function RequestPanel() {
   } = useRequestStore();
 
   const [activeTab, setActiveTab] = useState<Tab>('params');
+  const hasHydrated = useHasHydrated();
+
+  if (!hasHydrated) return <GlassCard className="h-[400px] animate-pulse bg-white/5" />;
 
   return (
     <GlassCard className="flex flex-col gap-6">
