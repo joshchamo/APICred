@@ -83,6 +83,9 @@ export default function Home() {
           <p className="text-[10px] text-white/20 font-medium tracking-widest uppercase">
             Built with Next.js • Zustand • Tailwind CSS
           </p>
+          <p className="text-[8px] text-white/10 mt-2 uppercase tracking-tight">
+            v1.0.4 • Last Update: {new Date().toLocaleTimeString()}
+          </p>
         </footer>
       </div>
     </main>
