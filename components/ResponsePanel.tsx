@@ -145,10 +145,10 @@ export default function ResponsePanel() {
         
         <div className="flex-1 bg-[#0f172a] border border-white/10 rounded-[2rem] p-8 font-mono text-sm overflow-auto custom-scrollbar shadow-2xl relative">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-          <pre className="!bg-transparent !m-0 !p-0">
+          <pre className="!bg-transparent !m-0 !p-0 whitespace-pre-wrap break-words">
             <code 
               ref={codeRef} 
-              className={cn("language-json", !isJson && "language-none")}
+              className={cn("language-json whitespace-pre-wrap break-words", !isJson && "language-none")}
             >
               {isJson 
                 ? JSON.stringify(response.data, null, 2) 
