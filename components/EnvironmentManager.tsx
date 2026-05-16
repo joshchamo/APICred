@@ -15,15 +15,14 @@ export default function EnvironmentManager() {
   const hasHydrated = useHasHydrated();
 
   useEffect(() => {
-    console.log('ApiCred Environment Manager v1.0.5 Loaded');
-  }, []);
-
-  // Force selection of an environment if none is selected but they exist
-  useEffect(() => {
-    if (isOpen && environments.length > 0) {
-      const exists = environments.find(e => e.id === editingId);
-      if (!editingId || !exists) {
-        setEditingId(environments[0].id);
+    if (isOpen) {
+      console.log('ApiCred v1.0.6: Panel Opened. Environments:', environments.length);
+      if (environments.length > 0) {
+        const currentEnv = environments.find(e => e.id === editingId);
+        if (!editingId || !currentEnv) {
+          console.log('ApiCred v1.0.6: Auto-selecting first environment:', environments[0].id);
+          setEditingId(environments[0].id);
+        }
       }
     }
   }, [isOpen, environments, editingId]);
@@ -42,6 +41,8 @@ export default function EnvironmentManager() {
 
     addEnvironment(trimmedName);
   };
+
+  const selectedEnv = environments.find(e => e.id === editingId) || (environments.length > 0 ? environments[0] : null);
 
   if (!hasHydrated) return null;
 
@@ -123,18 +124,22 @@ export default function EnvironmentManager() {
                 </div>
               </div>
 
-              <div className="flex-1 flex flex-col min-h-0">
-                {/* Tabs */}
-                <div className="p-5 border-b border-white/5 bg-black/40 shrink-0">
+              {/* Body */}
+              <div className="flex-1 flex flex-col min-h-0 bg-slate-950">
+                {/* Profile List */}
+                <div className="p-5 border-b border-white/5 bg-black/40">
                   <span className="text-[10px] font-black text-white/20 uppercase tracking-widest block mb-4">Saved Profiles</span>
                   <div className="flex flex-wrap gap-2">
                     {environments.map(env => (
                       <button
                         key={env.id}
-                        onClick={() => setEditingId(env.id)}
+                        onClick={() => {
+                          console.log('ApiCred v1.0.6: Selected Env:', env.id);
+                          setEditingId(env.id);
+                        }}
                         className={cn(
                           "px-3 py-2 rounded-lg text-xs font-black transition-all border",
-                          editingId === env.id 
+                          (editingId === env.id || (editingId === null && env.id === selectedEnv?.id))
                             ? "bg-primary border-primary text-white shadow-xl shadow-primary/20" 
                             : "bg-white/5 border-white/5 text-white/40 hover:border-white/20 hover:text-white"
                         )}
@@ -143,67 +148,61 @@ export default function EnvironmentManager() {
                       </button>
                     ))}
                     {environments.length === 0 && (
-                      <div className="w-full py-8 text-center border border-dashed border-white/10 rounded-3xl bg-white/[0.02]">
-                        <p className="text-[10px] text-white/20 font-bold">No environments found</p>
+                      <div className="w-full py-6 text-center border border-dashed border-white/10 rounded-2xl">
+                        <p className="text-[10px] text-white/20">No profiles found</p>
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Editor Section */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-gradient-to-b from-transparent to-white/[0.02]">
-                  {editingId && environments.find(e => e.id === editingId) ? (
+                {/* Main Editor Area */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
+                  {selectedEnv ? (
                     <div className="space-y-8 pb-10">
-                      {/* Name & Delete */}
-                      <div className="space-y-4 p-5 rounded-2xl bg-white/[0.03] border border-white/5">
-                        <div className="flex items-center justify-between">
-                          <label className="text-[10px] font-black text-white/20 uppercase tracking-widest">Profile Name</label>
+                      {/* Name Section */}
+                      <div className="space-y-4 p-5 rounded-3xl bg-white/[0.03] border border-white/5">
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex-1">
+                            <label className="text-[10px] font-black text-white/20 uppercase tracking-widest block mb-2">Profile Name</label>
+                            <input
+                              type="text"
+                              value={selectedEnv.name}
+                              onChange={(e) => updateEnvironment(selectedEnv.id, e.target.value, selectedEnv.variables)}
+                              className="w-full bg-black/40 px-4 py-3 rounded-xl text-lg font-black text-white focus:outline-none border border-white/10 focus:border-primary/50 transition-all"
+                            />
+                          </div>
                           <button
                             onClick={() => {
                               if (confirm('Delete this environment and all its variables?')) {
-                                removeEnvironment(editingId);
+                                removeEnvironment(selectedEnv.id);
                                 setEditingId(null);
                               }
                             }}
-                            className="flex items-center gap-1.5 px-3 py-2 bg-rose-500 text-white text-[10px] font-black rounded-lg hover:bg-rose-600 transition-all shadow-lg shadow-rose-500/20"
+                            className="mt-6 p-3 bg-rose-500 hover:bg-rose-600 text-white rounded-xl shadow-xl shadow-rose-500/30 transition-all group"
+                            title="Delete Profile"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            DELETE PROFILE
+                            <Trash2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
                           </button>
                         </div>
-                        <input
-                          type="text"
-                          value={environments.find(e => e.id === editingId)?.name || ''}
-                          onChange={(e) => {
-                            const env = environments.find(ev => ev.id === editingId);
-                            if (env) updateEnvironment(editingId, e.target.value, env.variables);
-                          }}
-                          className="w-full bg-black/40 px-4 py-3 rounded-xl text-lg font-black text-white focus:outline-none border border-white/10 focus:border-primary/50 transition-all"
-                        />
                       </div>
 
-                      {/* Variables List */}
+                      {/* Variables Editor */}
                       <div className="space-y-4">
                         <div className="flex items-center justify-between px-1">
-                          <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Variables</h3>
+                          <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Environment Variables</h3>
                         </div>
                         <div className="bg-black/40 rounded-3xl p-4 border border-white/10 shadow-inner">
                           <KeyValueEditor
-                            items={environments.find(e => e.id === editingId)?.variables || []}
+                            items={selectedEnv.variables}
                             onAdd={() => {
-                              const env = environments.find(e => e.id === editingId);
-                              if (env) updateEnvironment(editingId, env.name, [...env.variables, { id: Math.random().toString(36).substring(2, 9), key: '', value: '', enabled: true }]);
+                              updateEnvironment(selectedEnv.id, selectedEnv.name, [...selectedEnv.variables, { id: Math.random().toString(36).substring(2, 9), key: '', value: '', enabled: true }]);
                             }}
                             onRemove={(id) => {
-                              const env = environments.find(e => e.id === editingId);
-                              if (env) updateEnvironment(editingId, env.name, env.variables.filter(v => v.id !== id));
+                              updateEnvironment(selectedEnv.id, selectedEnv.name, selectedEnv.variables.filter(v => v.id !== id));
                             }}
                             onUpdate={(id, field, val) => {
-                              const env = environments.find(e => e.id === editingId);
-                              if (env) {
-                                const newVars = env.variables.map(v => v.id === id ? { ...v, [field]: val } : v);
-                                updateEnvironment(editingId, env.name, newVars);
-                              }
+                              const newVars = selectedEnv.variables.map(v => v.id === id ? { ...v, [field]: val } : v);
+                              updateEnvironment(selectedEnv.id, selectedEnv.name, newVars);
                             }}
                           />
                         </div>
@@ -215,9 +214,10 @@ export default function EnvironmentManager() {
                           <Info className="w-5 h-5 text-white" />
                         </div>
                         <div className="space-y-1">
-                          <p className="text-[11px] text-white font-bold tracking-tight">How to use variables:</p>
+                          <p className="text-[11px] text-white font-bold tracking-tight">Pro Tip:</p>
                           <p className="text-[10px] text-white/50 leading-relaxed">
-                            Type <span className="text-primary font-black">{"{{name}}"}</span> in any input field to inject the value from your active environment profile.
+                            Inject these values into any field using <span className="text-primary font-black">{"{{key}}"}</span>. 
+                            <br/>Example: <span className="text-white/30 italic">{"{{api_url}}"}</span>/v1/users
                           </p>
                         </div>
                       </div>
@@ -229,7 +229,7 @@ export default function EnvironmentManager() {
                       </div>
                       <h3 className="text-lg font-black text-white mb-3 tracking-tight">Environment Profiles</h3>
                       <p className="text-xs text-white/30 leading-relaxed mb-10 max-w-[260px]">
-                        Switch between development, staging, and production variables with a single click.
+                        Define sets of variables for different environments and switch between them instantly.
                       </p>
                       <button
                         onClick={handleCreateEnv}
