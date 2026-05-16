@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useRequestStore, Environment, KeyValue } from '@/store/useRequestStore';
 import { Settings, Plus, Trash2, X, Check } from 'lucide-react';
 import GlassCard from './GlassCard';
