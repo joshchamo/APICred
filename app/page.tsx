@@ -37,13 +37,18 @@ export default function Home() {
                 <Menu className="w-5 h-5" />
               </button>
             )}
-            <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.5)]">
+            <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-gradient-to-br from-rose-500 to-amber-500 flex items-center justify-center shadow-[0_0_20px_rgba(244,63,94,0.5)]">
               <Zap className="w-5 h-5 lg:w-6 lg:h-6 text-white fill-white" />
             </div>
             <div>
-              <h1 className="text-lg lg:text-xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
-                ApiCred
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg lg:text-xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
+                  ApiCred
+                </h1>
+                <span className="px-1.5 py-0.5 rounded-md bg-primary/20 text-primary text-[8px] font-black uppercase tracking-tighter border border-primary/20">
+                  v1.0.5
+                </span>
+              </div>
               <p className="text-[9px] lg:text-[10px] uppercase tracking-[0.2em] text-white/30 font-bold">
                 Professional API Testing
               </p>

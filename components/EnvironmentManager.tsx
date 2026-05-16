@@ -14,6 +14,10 @@ export default function EnvironmentManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const hasHydrated = useHasHydrated();
 
+  useEffect(() => {
+    console.log('ApiCred Environment Manager v1.0.5 Loaded');
+  }, []);
+
   // Force selection of an environment if none is selected but they exist
   useEffect(() => {
     if (isOpen && environments.length > 0) {
