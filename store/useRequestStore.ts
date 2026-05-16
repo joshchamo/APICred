@@ -18,6 +18,12 @@ interface RequestResponse {
   time: number;
 }
 
+export interface Environment {
+  id: string;
+  name: string;
+  variables: KeyValue[];
+}
+
 export interface RequestHistoryItem {
   id: string;
   method: HttpMethod;
@@ -27,7 +33,7 @@ export interface RequestHistoryItem {
   body: string;
   timestamp: number;
   status?: number;
-  response?: RequestResponse; // Added response to history
+  response?: RequestResponse;
 }
 
 interface RequestState {
@@ -46,6 +52,10 @@ interface RequestState {
   // History
   history: RequestHistoryItem[];
 
+  // Environments
+  environments: Environment[];
+  activeEnvId: string | null;
+
   // Actions
   setMethod: (method: HttpMethod) => void;
   setUrl: (url: string) => void;
@@ -61,12 +71,30 @@ interface RequestState {
   removeParam: (id: string) => void;
   updateParam: (id: string, field: 'key' | 'value' | 'enabled', val: string | boolean) => void;
 
+  // Environment Actions
+  setActiveEnv: (id: string | null) => void;
+  addEnvironment: (name: string) => void;
+  removeEnvironment: (id: string) => void;
+  updateEnvironment: (id: string, name: string, variables: KeyValue[]) => void;
+
   sendRequest: () => Promise<void>;
   loadFromHistory: (item: RequestHistoryItem) => void;
   clearHistory: () => void;
 }
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
+
+const replaceVariables = (text: string, env: Environment | null): string => {
+  if (!text || !env) return text;
+  let result = text;
+  env.variables.forEach(v => {
+    if (v.enabled && v.key) {
+      const regex = new RegExp(`{{${v.key}}}`, 'g');
+      result = result.replace(regex, v.value);
+    }
+  });
+  return result;
+};
 
 export const useRequestStore = create<RequestState>()(
   persist(
@@ -80,6 +108,8 @@ export const useRequestStore = create<RequestState>()(
       response: null,
       error: null,
       history: [],
+      environments: [],
+      activeEnvId: null,
 
       setMethod: (method) => set({ method }),
       setUrl: (url) => set({ url }),
@@ -107,28 +137,51 @@ export const useRequestStore = create<RequestState>()(
         params: state.params.map((p) => p.id === id ? { ...p, [field]: val } : p)
       })),
 
+      setActiveEnv: (activeEnvId) => set({ activeEnvId }),
+      addEnvironment: (name) => set((state) => ({
+        environments: [...state.environments, { id: generateId(), name, variables: [{ id: generateId(), key: '', value: '', enabled: true }] }]
+      })),
+      removeEnvironment: (id) => set((state) => ({
+        environments: state.environments.filter(e => e.id !== id),
+        activeEnvId: state.activeEnvId === id ? null : state.activeEnvId
+      })),
+      updateEnvironment: (id, name, variables) => set((state) => ({
+        environments: state.environments.map(e => e.id === id ? { ...e, name, variables } : e)
+      })),
+
       sendRequest: async () => {
-        const { method, url, headers, params, body } = get();
+        const { method, url, headers, params, body, activeEnvId, environments } = get();
         if (!url) return;
 
         set({ isLoading: true, error: null, response: null });
 
+        const activeEnv = environments.find(e => e.id === activeEnvId) || null;
+        const processText = (t: string) => replaceVariables(t, activeEnv);
+
         const startTime = Date.now();
 
         try {
-          // Construct query params
+          // Process URL and Query Params with variable replacement
+          const processedUrl = processText(url);
           const enabledParams = params.filter(p => p.enabled && p.key);
           const queryString = enabledParams.length > 0 
-            ? '?' + enabledParams.map(p => `${encodeURIComponent(p.key)}=${encodeURIComponent(p.value)}`).join('&')
+            ? '?' + enabledParams.map(p => {
+                const k = processText(p.key);
+                const v = processText(p.value);
+                return `${encodeURIComponent(k)}=${encodeURIComponent(v)}`;
+              }).join('&')
             : '';
           
-          const fullUrl = url.includes('?') ? `${url}&${queryString.slice(1)}` : `${url}${queryString}`;
+          const fullUrl = processedUrl.includes('?') ? `${processedUrl}&${queryString.slice(1)}` : `${processedUrl}${queryString}`;
 
-          // Construct headers object
+          // Process Headers
           const headerObj: Record<string, string> = {};
           headers.filter(h => h.enabled && h.key).forEach(h => {
-            headerObj[h.key] = h.value;
+            headerObj[processText(h.key)] = processText(h.value);
           });
+
+          // Process Body
+          const processedBody = processText(body);
 
           const proxyResponse = await fetch('/api/proxy', {
             method: 'POST',
@@ -137,7 +190,7 @@ export const useRequestStore = create<RequestState>()(
               targetUrl: fullUrl,
               method,
               headers: headerObj,
-              body: ['GET', 'HEAD'].includes(method) ? undefined : body
+              body: ['GET', 'HEAD'].includes(method) ? undefined : processedBody
             })
           });
 
@@ -166,7 +219,7 @@ export const useRequestStore = create<RequestState>()(
                   body,
                   timestamp: Date.now(),
                   status: result.status,
-                  response: newResponse // Save response in history
+                  response: newResponse
                 },
                 ...get().history.slice(0, 49)
               ]
@@ -186,7 +239,7 @@ export const useRequestStore = create<RequestState>()(
           headers: JSON.parse(JSON.stringify(item.headers || [])),
           params: JSON.parse(JSON.stringify(item.params || [])),
           body: item.body || '',
-          response: item.response ? JSON.parse(JSON.stringify(item.response)) : null, // Restore response
+          response: item.response ? JSON.parse(JSON.stringify(item.response)) : null,
           error: null
         });
       },
@@ -202,7 +255,9 @@ export const useRequestStore = create<RequestState>()(
         headers: state.headers,
         params: state.params,
         body: state.body,
-        history: state.history 
+        history: state.history,
+        environments: state.environments,
+        activeEnvId: state.activeEnvId
       }),
     }
   )

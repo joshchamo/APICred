@@ -1,6 +1,7 @@
 import RequestPanel from '@/components/RequestPanel';
 import ResponsePanel from '@/components/ResponsePanel';
 import HistorySidebar from '@/components/HistorySidebar';
+import EnvironmentManager from '@/components/EnvironmentManager';
 import { Zap } from 'lucide-react';
 
 export default function Home() {
@@ -32,7 +33,8 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
+            <EnvironmentManager />
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white/40">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
               SYSTEM OPERATIONAL
