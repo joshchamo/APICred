@@ -1,4 +1,4 @@
-# 🔮 APICred Studio
+# 🔮 APICred
 
 <div align="center">
   <img src="./public/logo.png" alt="APICred Logo" width="120" style="border-radius: 24px; margin-bottom: 20px;" onerror="this.style.display='none'" />
@@ -78,12 +78,12 @@ Instantly generate beautifully formatted, multi-line shell commands directly fro
 ```bash
 # ⚠ Sensitive payload - handle with care
 curl --request POST \
-  --url 'https://api.github.com/user' \
+  --url 'https://jsonplaceholder.typicode.com/posts' \
   --header 'Authorization: Bearer <your_token>' \
   --header 'Content-Type: application/json' \
   --data '{
-    "name": "Jane Miller",
-    "email": "user_a1b2c@gmail.com"
+    "title": "Jane Miller",
+    "body": "user_a1b2c@gmail.com"
   }'
 ```
 
@@ -138,7 +138,18 @@ To test APICred immediately, try these pre-configured sandbox endpoints:
   "id": "3"
   ```
 
-### 3. User Bulk Creation (POST with Dynamic Variables)
+### 3. GitHub API — Bearer Token Auth
+* **Method**: `GET`
+* **URL**: `{{baseURL}}/user`
+* **Step-by-Step Instructions**:
+  1. Go to GitHub → Settings → Developer settings → Personal access tokens
+  2. Generate a token with `read:user` scope
+  3. In APICred, open the Environments panel → create an environment → add:
+     * `baseURL = https://api.github.com`
+  4. Select **Auth** tab → **Bearer Token** → paste your token
+  5. Click **Send**!
+
+### 4. Dynamic Variables — POST with Mock Data
 * **Method**: `POST`
 * **URL**: `https://jsonplaceholder.typicode.com/users`
 * **Body (JSON)**:
@@ -150,6 +161,7 @@ To test APICred immediately, try these pre-configured sandbox endpoints:
     "phone": "{{$randomPhone}}"
   }
   ```
+  Each request generates a fully unique payload — no setup, no library.
 
 ---
 
