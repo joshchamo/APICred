@@ -133,7 +133,7 @@ const getDynamicValue = (key: string): string => {
   }
 };
 
-const replaceVariables = (text: string, env: Environment | null): string => {
+export const replaceVariables = (text: string, env: Environment | null): string => {
   if (!text) return text;
   let result = text;
   

@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useRequestStore, HttpMethod } from '@/store/useRequestStore';
+import { useRequestStore, HttpMethod, replaceVariables } from '@/store/useRequestStore';
 import GlassCard from './GlassCard';
 import KeyValueEditor from './KeyValueEditor';
-import { Send, Globe, Layers, Settings2, FileText, KeyRound } from 'lucide-react';
+import { Send, Globe, Layers, Settings2, FileText, KeyRound, Terminal, ClipboardCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const METHODS: HttpMethod[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
@@ -19,11 +19,54 @@ export default function RequestPanel() {
     body, setBody,
     authType, setAuthType,
     bearerToken, setBearerToken,
+    activeEnvId, environments,
     sendRequest, isLoading,
     _hasHydrated
   } = useRequestStore();
 
   const [activeTab, setActiveTab] = useState<Tab>('params');
+  const [curlCopied, setCurlCopied] = useState(false);
+
+  const handleCopyCurl = () => {
+    const activeEnv = environments.find(e => e.id === activeEnvId) || null;
+    const processText = (t: string) => replaceVariables(t, activeEnv);
+
+    const processedUrl = processText(url || 'https://api.example.com');
+    const enabledParams = params.filter(p => p.enabled && p.key);
+    const queryString = enabledParams.length > 0 
+      ? '?' + enabledParams.map(p => {
+          const k = processText(p.key);
+          const v = processText(p.value);
+          return `${encodeURIComponent(k)}=${encodeURIComponent(v)}`;
+        }).join('&')
+      : '';
+    
+    const fullUrl = processedUrl.includes('?') ? `${processedUrl}&${queryString.slice(1)}` : `${processedUrl}${queryString}`;
+
+    let curlParts = [`curl --request ${method}`, `--url '${fullUrl}'`];
+
+    // 1. Regular Headers
+    headers.filter(h => h.enabled && h.key).forEach(h => {
+      curlParts.push(`--header '${processText(h.key)}: ${processText(h.value)}'`);
+    });
+
+    // 2. Auth Header
+    if (authType === 'bearer' && bearerToken) {
+      curlParts.push(`--header 'Authorization: Bearer ${processText(bearerToken)}'`);
+    }
+
+    // 3. Body Data
+    if (!['GET', 'HEAD'].includes(method) && body) {
+      const processedBody = processText(body);
+      const escapedBody = processedBody.replace(/'/g, "'\\''");
+      curlParts.push(`--data '${escapedBody}'`);
+    }
+
+    const curlCommand = curlParts.join(' \\\n  ');
+    navigator.clipboard.writeText(curlCommand);
+    setCurlCopied(true);
+    setTimeout(() => setCurlCopied(false), 2000);
+  };
 
   if (!_hasHydrated) return <GlassCard className="h-[400px] animate-pulse bg-white/5" />;
 
@@ -74,6 +117,21 @@ export default function RequestPanel() {
             <Send className="w-4 h-4 fill-current" />
           )}
           Send
+        </button>
+
+        <button
+          onClick={handleCopyCurl}
+          disabled={!url}
+          className={cn(
+            "px-6 py-3.5 rounded-2xl border transition-all active:scale-95 disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed flex items-center justify-center gap-2",
+            curlCopied 
+              ? "bg-emerald-500 border-emerald-500 text-white shadow-xl shadow-emerald-500/20" 
+              : "bg-white/5 border-white/10 text-white/50 hover:text-white hover:bg-white/10 hover:border-white/20"
+          )}
+          title="Copy as cURL command"
+        >
+          {curlCopied ? <ClipboardCheck className="w-4 h-4" /> : <Terminal className="w-4 h-4" />}
+          <span className="text-[10px] font-black uppercase tracking-widest">cURL</span>
         </button>
       </div>
 
