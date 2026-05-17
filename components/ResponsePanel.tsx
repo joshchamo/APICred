@@ -10,6 +10,24 @@ import 'prismjs/components/prism-json';
 // We'll use a basic theme approach or custom CSS in globals
 import 'prismjs/themes/prism-tomorrow.css'; 
 
+const maskSensitiveHeader = (key: string, value: string): string => {
+  const normalizedKey = key.toLowerCase();
+  if (normalizedKey === 'authorization' || normalizedKey === 'proxy-authorization') {
+    if (value.toLowerCase().startsWith('bearer ')) {
+      const token = value.slice(7);
+      if (token.length > 12) {
+        return `Bearer ${token.slice(0, 8)}••••••••`;
+      }
+      return `Bearer ••••••••`;
+    }
+    if (value.length > 12) {
+      return `${value.slice(0, 8)}••••••••`;
+    }
+    return `••••••••`;
+  }
+  return value;
+};
+
 export default function ResponsePanel() {
   const { response, error, isLoading, _hasHydrated } = useRequestStore();
   const [copied, setCopied] = useState(false);
@@ -189,7 +207,7 @@ export default function ResponsePanel() {
                 Object.entries(response.headers).map(([key, value]) => (
                   <div key={key} className="flex flex-col md:flex-row py-3.5 gap-2 md:gap-4 hover:bg-white/[0.01] transition-colors px-2 rounded-lg">
                     <span className="font-black text-white/45 min-w-[220px] select-all break-all uppercase tracking-wider text-[9px]">{key}</span>
-                    <span className="text-emerald-400 font-bold select-all break-all">{value}</span>
+                    <span className="text-emerald-400 font-bold select-all break-all">{maskSensitiveHeader(key, value)}</span>
                   </div>
                 ))
               ) : (

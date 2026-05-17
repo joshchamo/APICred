@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRequestStore, HttpMethod, replaceVariables } from '@/store/useRequestStore';
 import GlassCard from './GlassCard';
 import KeyValueEditor from './KeyValueEditor';
-import { Send, Globe, Layers, Settings2, FileText, KeyRound, Terminal, ClipboardCheck } from 'lucide-react';
+import { Send, Globe, Layers, Settings2, FileText, KeyRound, Terminal, ClipboardCheck, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const METHODS: HttpMethod[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
@@ -26,6 +26,7 @@ export default function RequestPanel() {
 
   const [activeTab, setActiveTab] = useState<Tab>('params');
   const [curlCopied, setCurlCopied] = useState(false);
+  const [showToken, setShowToken] = useState(false);
 
   const handleCopyCurl = () => {
     const activeEnv = environments.find(e => e.id === activeEnvId) || null;
@@ -195,13 +196,23 @@ export default function RequestPanel() {
                       <label className="text-[10px] font-black text-white/30 uppercase tracking-widest">Bearer Token</label>
                       <span className="text-[8px] text-white/25 uppercase font-bold tracking-widest font-mono">Supports {"{{variables}}"}</span>
                     </div>
-                    <input
-                      type="text"
-                      placeholder="Enter token value or variable (e.g. {{myToken}})..."
-                      value={bearerToken}
-                      onChange={(e) => setBearerToken(e.target.value)}
-                      className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl focus:outline-none focus:border-primary/50 text-sm font-medium transition-all shadow-inner"
-                    />
+                    <div className="relative flex items-center">
+                      <input
+                        type={showToken ? "text" : "password"}
+                        placeholder="Enter token value or variable (e.g. {{myToken}})..."
+                        value={bearerToken}
+                        onChange={(e) => setBearerToken(e.target.value)}
+                        className="w-full pl-4 pr-12 py-3 bg-black/40 border border-white/10 rounded-xl focus:outline-none focus:border-primary/50 text-sm font-medium transition-all shadow-inner font-mono"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowToken(!showToken)}
+                        className="absolute right-4 text-white/30 hover:text-white/60 transition-colors"
+                        title={showToken ? "Hide Token" : "Show Token"}
+                      >
+                        {showToken ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
                   <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl text-[10px] text-white/40 leading-relaxed font-bold">
                     This bearer token is automatically injected as the <span className="text-primary font-black">Authorization</span> header before the request is executed. You do not need to set it manually in the Headers tab!
