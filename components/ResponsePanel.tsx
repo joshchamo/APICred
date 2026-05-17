@@ -2,7 +2,7 @@
 
 import { useRequestStore } from '@/store/useRequestStore';
 import GlassCard from './GlassCard';
-import { Clock, CheckCircle, AlertCircle, Terminal, Copy, ClipboardCheck, Code2 } from 'lucide-react';
+import { Clock, CheckCircle, AlertCircle, Terminal, Copy, ClipboardCheck, Code2, List, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect, useRef } from 'react';
 import Prism from 'prismjs';
@@ -13,19 +13,20 @@ import 'prismjs/themes/prism-tomorrow.css';
 export default function ResponsePanel() {
   const { response, error, isLoading, _hasHydrated } = useRequestStore();
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<'body' | 'headers'>('body');
   const codeRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (response && codeRef.current) {
+    if (response && codeRef.current && activeTab === 'body') {
       Prism.highlightElement(codeRef.current);
     }
-  }, [response, isLoading]);
+  }, [response, isLoading, activeTab]);
 
   const handleCopy = () => {
     if (!response) return;
-    const text = typeof response.data === 'object' 
-      ? JSON.stringify(response.data, null, 2) 
-      : response.data;
+    const text = activeTab === 'body'
+      ? (typeof response.data === 'object' ? JSON.stringify(response.data, null, 2) : response.data)
+      : JSON.stringify(response.headers || {}, null, 2);
     
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -122,41 +123,84 @@ export default function ResponsePanel() {
         </div>
       </div>
 
-      {/* Response Body Viewport */}
+      {/* Response Payload/Headers Tab Switcher */}
       <div className="flex-1 flex flex-col min-h-[450px]">
-        <div className="flex items-center justify-between mb-4 px-1">
-          <div className="flex items-center gap-3">
-            <Terminal className="w-4 h-4 text-primary" />
-            <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Response Payload</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 px-1">
+          <div className="flex items-center gap-1.5 p-1 bg-black/40 rounded-xl border border-white/5 w-fit">
+            <button
+              onClick={() => setActiveTab('body')}
+              className={cn(
+                "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-[0.1em] transition-all flex items-center gap-1.5",
+                activeTab === 'body' 
+                  ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                  : "text-white/30 hover:text-white/60 hover:bg-white/5"
+              )}
+            >
+              <Terminal className="w-3.5 h-3.5" />
+              Body Payload
+            </button>
+            <button
+              onClick={() => setActiveTab('headers')}
+              className={cn(
+                "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-[0.1em] transition-all flex items-center gap-1.5",
+                activeTab === 'headers' 
+                  ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                  : "text-white/30 hover:text-white/60 hover:bg-white/5"
+              )}
+            >
+              <List className="w-3.5 h-3.5" />
+              Headers ({response.headers ? Object.keys(response.headers).length : 0})
+            </button>
           </div>
+
           <button 
             onClick={handleCopy}
             className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border",
+              "flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border w-fit",
               copied 
                 ? "bg-emerald-500 border-emerald-500 text-white" 
                 : "bg-primary/10 border-primary/20 text-primary hover:bg-primary hover:text-white hover:border-primary"
             )}
           >
             {copied ? <ClipboardCheck className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-            {copied ? 'Copied!' : (isJson ? 'Copy JSON' : 'Copy Content')}
+            {copied ? 'Copied!' : (activeTab === 'body' ? (isJson ? 'Copy JSON' : 'Copy Content') : 'Copy Headers')}
           </button>
         </div>
         
-        <div className="flex-1 bg-[#0f172a] border border-white/10 rounded-[2rem] p-8 font-mono text-sm overflow-auto custom-scrollbar shadow-2xl relative">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-          <pre className="!bg-transparent !m-0 !p-0 whitespace-pre-wrap break-words">
-            <code 
-              ref={codeRef} 
-              className={cn("language-json whitespace-pre-wrap break-words", !isJson && "language-none")}
-            >
-              {isJson 
-                ? JSON.stringify(response.data, null, 2) 
-                : response.data}
-            </code>
-          </pre>
-        </div>
-      </div>
+        {activeTab === 'body' ? (
+          <div className="flex-1 bg-[#0f172a] border border-white/10 rounded-[2rem] p-8 font-mono text-sm overflow-auto custom-scrollbar shadow-2xl relative animate-in fade-in duration-200">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+            <pre className="!bg-transparent !m-0 !p-0 whitespace-pre-wrap break-words">
+              <code 
+                ref={codeRef} 
+                className={cn("language-json whitespace-pre-wrap break-words", !isJson && "language-none")}
+              >
+                {isJson 
+                  ? JSON.stringify(response.data, null, 2) 
+                  : response.data}
+              </code>
+            </pre>
+          </div>
+        ) : (
+          <div className="flex-1 bg-[#0f172a] border border-white/10 rounded-[2rem] p-8 font-mono text-xs overflow-auto custom-scrollbar shadow-2xl relative animate-in fade-in duration-200">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+            <div className="divide-y divide-white/5">
+              {response.headers && Object.keys(response.headers).length > 0 ? (
+                Object.entries(response.headers).map(([key, value]) => (
+                  <div key={key} className="flex flex-col md:flex-row py-3.5 gap-2 md:gap-4 hover:bg-white/[0.01] transition-colors px-2 rounded-lg">
+                    <span className="font-black text-white/45 min-w-[220px] select-all break-all uppercase tracking-wider text-[9px]">{key}</span>
+                    <span className="text-emerald-400 font-bold select-all break-all">{value}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center py-20 opacity-20 text-center gap-2">
+                  <List className="w-8 h-8 text-white/50" />
+                  <p className="text-xs font-black uppercase tracking-wider">No Headers Available</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
     </GlassCard>
   );
 }
