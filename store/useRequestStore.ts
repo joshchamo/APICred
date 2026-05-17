@@ -88,15 +88,66 @@ interface RequestState {
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
-const replaceVariables = (text: string, env: Environment | null): string => {
-  if (!text || !env) return text;
-  let result = text;
-  env.variables.forEach(v => {
-    if (v.enabled && v.key) {
-      const regex = new RegExp(`{{${v.key}}}`, 'g');
-      result = result.replace(regex, v.value);
+const getDynamicValue = (key: string): string => {
+  const firstNames = ['John', 'Jane', 'Alex', 'Emily', 'Michael', 'Sarah', 'David', 'Jessica', 'Robert', 'Karen'];
+  const lastNames = ['Smith', 'Doe', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller', 'Davis', 'Wilson', 'Anderson'];
+  
+  switch (key) {
+    case '$randomEmail': {
+      const rand = Math.random().toString(36).substring(2, 7);
+      const domains = ['gmail.com', 'yahoo.com', 'outlook.com', 'example.com'];
+      const domain = domains[Math.floor(Math.random() * domains.length)];
+      return `user_${rand}@${domain}`;
     }
+    case '$randomUUID': {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = (Math.random() * 16) | 0;
+        const v = c === 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      });
+    }
+    case '$timestamp': {
+      return Math.floor(Date.now() / 1000).toString();
+    }
+    case '$randomInt': {
+      return Math.floor(Math.random() * 1000).toString();
+    }
+    case '$randomName': {
+      const fn = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const ln = lastNames[Math.floor(Math.random() * lastNames.length)];
+      return `${fn} ${ln}`;
+    }
+    case '$randomBool': {
+      return Math.random() > 0.5 ? 'true' : 'false';
+    }
+    case '$randomPhone': {
+      const randDigits = () => Math.floor(Math.random() * 10).toString();
+      return `+1-555-${randDigits()}${randDigits()}${randDigits()}${randDigits()}`;
+    }
+    default:
+      return `{{${key}}}`;
+  }
+};
+
+const replaceVariables = (text: string, env: Environment | null): string => {
+  if (!text) return text;
+  let result = text;
+  
+  // 1. Resolve environment variables if active
+  if (env) {
+    env.variables.forEach(v => {
+      if (v.enabled && v.key) {
+        const regex = new RegExp(`{{${v.key}}}`, 'g');
+        result = result.replace(regex, v.value);
+      }
+    });
+  }
+
+  // 2. Resolve built-in dynamic variables
+  result = result.replace(/{{(\$[a-zA-Z0-9_]+)}}/g, (match, variableName) => {
+    return getDynamicValue(variableName);
   });
+
   return result;
 };
 

@@ -197,6 +197,41 @@ export default function EnvironmentManager({ isPermanent = false }: EnvironmentM
                       </div>
                     </div>
                   </div>
+
+                  <div className="space-y-2">
+                    <p className="font-black text-white/60 text-[10px] uppercase tracking-wider">Dynamic Variables (Postman Style)</p>
+                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-2 font-mono text-[9px] text-white/30 leading-normal">
+                      <p className="text-[10px] text-white/50 mb-2 font-sans font-bold">Inject mock data directly without setting any keys! Prefix with <span className="text-primary font-black">$</span>:</p>
+                      <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
+                        <span className="text-primary font-bold">{"{{$randomUUID}}"}</span>
+                        <span className="text-white/50 italic">Unique UUID v4</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
+                        <span className="text-primary font-bold">{"{{$randomEmail}}"}</span>
+                        <span className="text-white/50 italic">Mock Email</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
+                        <span className="text-primary font-bold">{"{{$timestamp}}"}</span>
+                        <span className="text-white/50 italic">UNIX Timestamp</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
+                        <span className="text-primary font-bold">{"{{$randomName}}"}</span>
+                        <span className="text-white/50 italic">Full Name</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
+                        <span className="text-primary font-bold">{"{{$randomInt}}"}</span>
+                        <span className="text-white/50 italic">Int [0-999]</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
+                        <span className="text-primary font-bold">{"{{$randomBool}}"}</span>
+                        <span className="text-white/50 italic">true / false</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1 py-1">
+                        <span className="text-primary font-bold">{"{{$randomPhone}}"}</span>
+                        <span className="text-white/50 italic">Phone Number</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </details>
             </div>
