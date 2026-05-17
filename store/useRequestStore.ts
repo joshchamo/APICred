@@ -43,6 +43,8 @@ interface RequestState {
   headers: KeyValue[];
   params: KeyValue[];
   body: string;
+  authType: 'none' | 'bearer';
+  bearerToken: string;
   
   // UI State
   isLoading: boolean;
@@ -64,6 +66,8 @@ interface RequestState {
   setHeaders: (headers: KeyValue[]) => void;
   setParams: (params: KeyValue[]) => void;
   setBody: (body: string) => void;
+  setAuthType: (authType: 'none' | 'bearer') => void;
+  setBearerToken: (token: string) => void;
   setSidebarOpen: (isOpen: boolean) => void;
   setHasHydrated: (val: boolean) => void; // Hydration action
   
@@ -159,6 +163,8 @@ export const useRequestStore = create<RequestState>()(
       headers: [{ id: generateId(), key: 'Content-Type', value: 'application/json', enabled: true }],
       params: [{ id: generateId(), key: '', value: '', enabled: true }],
       body: '',
+      authType: 'none',
+      bearerToken: '',
       isLoading: false,
       response: null,
       error: null,
@@ -173,6 +179,8 @@ export const useRequestStore = create<RequestState>()(
       setHeaders: (headers) => set({ headers }),
       setParams: (params) => set({ params }),
       setBody: (body) => set({ body }),
+      setAuthType: (authType) => set({ authType }),
+      setBearerToken: (bearerToken) => set({ bearerToken }),
       setSidebarOpen: (isSidebarOpen) => set({ isSidebarOpen }),
       setHasHydrated: (_hasHydrated) => set({ _hasHydrated }),
 
@@ -209,7 +217,7 @@ export const useRequestStore = create<RequestState>()(
       })),
 
       sendRequest: async () => {
-        const { method, url, headers, params, body, activeEnvId, environments } = get();
+        const { method, url, headers, params, body, activeEnvId, environments, authType, bearerToken } = get();
         if (!url) return;
 
         set({ isLoading: true, error: null, response: null });
@@ -236,6 +244,10 @@ export const useRequestStore = create<RequestState>()(
           headers.filter(h => h.enabled && h.key).forEach(h => {
             headerObj[processText(h.key)] = processText(h.value);
           });
+
+          if (authType === 'bearer' && bearerToken) {
+            headerObj['Authorization'] = `Bearer ${processText(bearerToken)}`;
+          }
 
           const processedBody = processText(body);
 
@@ -315,6 +327,8 @@ export const useRequestStore = create<RequestState>()(
         headers: state.headers,
         params: state.params,
         body: state.body,
+        authType: state.authType,
+        bearerToken: state.bearerToken,
         history: state.history,
         environments: state.environments,
         activeEnvId: state.activeEnvId,

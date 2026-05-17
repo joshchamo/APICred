@@ -4,11 +4,11 @@ import { useState } from 'react';
 import { useRequestStore, HttpMethod } from '@/store/useRequestStore';
 import GlassCard from './GlassCard';
 import KeyValueEditor from './KeyValueEditor';
-import { Send, Globe, Layers, Settings2, FileText } from 'lucide-react';
+import { Send, Globe, Layers, Settings2, FileText, KeyRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const METHODS: HttpMethod[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
-type Tab = 'params' | 'headers' | 'body';
+type Tab = 'params' | 'auth' | 'headers' | 'body';
 
 export default function RequestPanel() {
   const { 
@@ -17,6 +17,8 @@ export default function RequestPanel() {
     headers, addHeader, removeHeader, updateHeader,
     params, addParam, removeParam, updateParam,
     body, setBody,
+    authType, setAuthType,
+    bearerToken, setBearerToken,
     sendRequest, isLoading,
     _hasHydrated
   } = useRequestStore();
@@ -78,7 +80,7 @@ export default function RequestPanel() {
       {/* Modern Tabs */}
       <div className="flex-1 flex flex-col min-h-[350px]">
         <div className="flex items-center gap-2 p-1.5 bg-black/40 rounded-2xl border border-white/5 w-fit mb-6">
-          {(['params', 'headers', 'body'] as Tab[]).map((tab) => (
+          {(['params', 'auth', 'headers', 'body'] as Tab[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -90,6 +92,7 @@ export default function RequestPanel() {
               )}
             >
               {tab === 'params' && <Layers className="w-3.5 h-3.5" />}
+              {tab === 'auth' && <KeyRound className="w-3.5 h-3.5" />}
               {tab === 'headers' && <Settings2 className="w-3.5 h-3.5" />}
               {tab === 'body' && <FileText className="w-3.5 h-3.5" />}
               {tab}
@@ -106,6 +109,52 @@ export default function RequestPanel() {
                 onRemove={removeParam}
                 onUpdate={updateParam}
               />
+            </div>
+          )}
+          {activeTab === 'auth' && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-6">
+              <div className="flex flex-col gap-2 max-w-sm">
+                <label className="text-[10px] font-black text-white/30 uppercase tracking-widest">Auth Type</label>
+                <div className="relative group">
+                  <select
+                    value={authType}
+                    onChange={(e) => setAuthType(e.target.value as 'none' | 'bearer')}
+                    className="w-full appearance-none px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-primary/50 text-sm font-bold text-white cursor-pointer transition-all hover:bg-white/10"
+                  >
+                    <option value="none" className="bg-slate-900 text-white font-bold">No Authentication</option>
+                    <option value="bearer" className="bg-slate-900 text-white font-bold">Bearer Token</option>
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20 scale-75">
+                    ▼
+                  </div>
+                </div>
+              </div>
+
+              {authType === 'bearer' ? (
+                <div className="space-y-4 max-w-xl animate-in fade-in duration-200">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-black text-white/30 uppercase tracking-widest">Bearer Token</label>
+                      <span className="text-[8px] text-white/25 uppercase font-bold tracking-widest font-mono">Supports {"{{variables}}"}</span>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Enter token value or variable (e.g. {{myToken}})..."
+                      value={bearerToken}
+                      onChange={(e) => setBearerToken(e.target.value)}
+                      className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl focus:outline-none focus:border-primary/50 text-sm font-medium transition-all shadow-inner"
+                    />
+                  </div>
+                  <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl text-[10px] text-white/40 leading-relaxed font-bold">
+                    This bearer token is automatically injected as the <span className="text-primary font-black">Authorization</span> header before the request is executed. You do not need to set it manually in the Headers tab!
+                  </div>
+                </div>
+              ) : (
+                <div className="p-10 border border-dashed border-white/5 bg-white/[0.01] rounded-2xl text-center opacity-30">
+                  <KeyRound className="w-10 h-10 mx-auto mb-4 text-white" />
+                  <p className="text-xs font-bold uppercase tracking-wider">No authentication required for this request.</p>
+                </div>
+              )}
             </div>
           )}
           {activeTab === 'headers' && (
