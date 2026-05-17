@@ -196,7 +196,7 @@ export const useRequestStore = create<RequestState>()(
         params: state.params.map((p) => p.id === id ? { ...p, [field]: val } : p)
       })),
 
-      setActiveEnv: (activeEnvId) => set({ activeEnvId }),
+      setActiveEnv: (activeEnvId) => set({ activeEnvId, response: null, error: null }),
       addEnvironment: (name) => set((state) => ({
         environments: [...state.environments, { id: generateId(), name, variables: [{ id: generateId(), key: '', value: '', enabled: true }] }]
       })),
