@@ -201,6 +201,7 @@ export default function ResponsePanel() {
             </div>
           </div>
         )}
+      </div>
     </GlassCard>
   );
 }
