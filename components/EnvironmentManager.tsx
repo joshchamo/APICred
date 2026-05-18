@@ -46,9 +46,6 @@ export default function EnvironmentManager({ isPermanent = false }: EnvironmentM
       {/* Header */}
       <div className="p-6 border-b border-white/5 bg-white/5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/20 rounded-lg">
-            <Globe className="w-5 h-5 text-primary" />
-          </div>
           <div>
             <h2 className="text-sm font-black text-white uppercase tracking-wider">Environments</h2>
             <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Global Variables</p>
@@ -157,14 +154,14 @@ export default function EnvironmentManager({ isPermanent = false }: EnvironmentM
 
               {/* Collapsible Guide */}
               <details className="group border border-white/10 rounded-2xl overflow-hidden bg-black/40 transition-all duration-300">
-                <summary className="px-4 py-3 text-[10px] font-black text-white/45 hover:text-white uppercase tracking-widest cursor-pointer select-none flex items-center justify-between transition-colors bg-white/[0.02] hover:bg-white/5">
+                <summary className="px-4 py-3 text-[11px] font-black text-white/45 hover:text-white uppercase tracking-widest cursor-pointer select-none flex items-center justify-between transition-colors bg-white/[0.02] hover:bg-white/5">
                   <span>Usage & Examples Guide</span>
                   <span className="transition-transform duration-300 group-open:rotate-180 text-[8px] text-white/30">▼</span>
                 </summary>
                 <div className="p-5 border-t border-white/5 text-[11px] text-white/40 space-y-5 leading-relaxed font-medium bg-black/25">
                   <div className="space-y-2">
-                    <p className="font-black text-white/60 text-[10px] uppercase tracking-wider">Example 1: PokéAPI</p>
-                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-1 font-mono text-[9px] text-white/30">
+                    <p className="font-black text-white/60 text-[11px] uppercase tracking-wider">Example 1: PokéAPI</p>
+                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-1 font-mono text-[11px] text-white/30">
                       <div><span className="text-primary font-bold">Key:</span> baseURL</div>
                       <div><span className="text-primary font-bold">Value:</span> https://pokeapi.co/api/v2</div>
                       <div className="pt-2 border-t border-white/5 text-white/50">
@@ -174,8 +171,8 @@ export default function EnvironmentManager({ isPermanent = false }: EnvironmentM
                   </div>
 
                   <div className="space-y-2">
-                    <p className="font-black text-white/60 text-[10px] uppercase tracking-wider">Example 2: Mock Users API</p>
-                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-1 font-mono text-[9px] text-white/30">
+                    <p className="font-black text-white/60 text-[11px] uppercase tracking-wider">Example 2: Mock Users API</p>
+                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-1 font-mono text-[11px] text-white/30">
                       <div><span className="text-primary font-bold">Key:</span> host</div>
                       <div><span className="text-primary font-bold">Value:</span> https://jsonplaceholder.typicode.com</div>
                       <div><span className="text-primary font-bold">Key:</span> id</div>
@@ -187,8 +184,8 @@ export default function EnvironmentManager({ isPermanent = false }: EnvironmentM
                   </div>
 
                   <div className="space-y-2">
-                    <p className="font-black text-white/60 text-[10px] uppercase tracking-wider">Example 3: Query Parameter Inject</p>
-                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-2 font-mono text-[9px] text-white/30">
+                    <p className="font-black text-white/60 text-[11px] uppercase tracking-wider">Example 3: Query Parameter Inject</p>
+                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-2 font-mono text-[11px] text-white/30">
                       <div><span className="text-primary font-bold">Key:</span> limit</div>
                       <div><span className="text-primary font-bold">Value:</span> 10</div>
                       <div className="pt-2 border-t border-white/5 text-white/50 leading-normal">
@@ -199,9 +196,9 @@ export default function EnvironmentManager({ isPermanent = false }: EnvironmentM
                   </div>
 
                   <div className="space-y-2">
-                    <p className="font-black text-white/60 text-[10px] uppercase tracking-wider">Dynamic Variables (Postman Style)</p>
-                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-2 font-mono text-[9px] text-white/30 leading-normal">
-                      <p className="text-[10px] text-white/50 mb-2 font-sans font-bold">Inject mock data directly without setting any keys! Prefix with <span className="text-primary font-black">$</span>:</p>
+                    <p className="font-black text-white/60 text-[11px] uppercase tracking-wider">Dynamic Variables (Postman Style)</p>
+                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-2 font-mono text-[11px] text-white/30 leading-normal">
+                      <p className="text-[11px] text-white/50 mb-2 font-sans font-bold">Inject mock data directly without setting any keys! Prefix with <span className="text-primary font-black">$</span>:</p>
                       <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
                         <span className="text-primary font-bold">{"{{$randomUUID}}"}</span>
                         <span className="text-white/50 italic">Unique UUID v4</span>

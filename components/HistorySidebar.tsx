@@ -1,3 +1,6 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { useRequestStore, RequestHistoryItem } from '@/store/useRequestStore';
 import { History, Trash2, Clock, ExternalLink, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -6,6 +9,36 @@ import { useHasHydrated } from '@/hooks/useHasHydrated';
 
 export default function HistorySidebar() {
   const { history, loadFromHistory, clearHistory, isSidebarOpen, setSidebarOpen, _hasHydrated } = useRequestStore();
+  const [width, setWidth] = useState(320);
+  const [isResizing, setIsResizing] = useState(false);
+
+  const startResizing = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+  };
+
+  useEffect(() => {
+    if (!isResizing) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Set width dynamically, min 240px, max 500px
+      const newWidth = e.clientX;
+      if (newWidth >= 240 && newWidth <= 500) {
+        setWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
 
   if (!_hasHydrated) return null;
 
@@ -14,14 +47,15 @@ export default function HistorySidebar() {
       {isSidebarOpen && (
         <motion.div
           initial={{ width: 0, opacity: 0 }}
-          animate={{ width: 320, opacity: 1 }}
+          animate={{ width: width, opacity: 1 }}
           exit={{ width: 0, opacity: 0 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
           className="fixed lg:relative z-40 inset-y-0 left-0 border-r border-white/5 flex flex-col h-full bg-black/40 lg:bg-black/20 backdrop-blur-2xl lg:backdrop-blur-xl shadow-2xl lg:shadow-none overflow-hidden"
         >
-          <div className="p-6 border-b border-white/5 flex items-center justify-between min-w-[320px]">
-            <div className="flex items-center gap-2 text-white/80 font-bold">
-              <History className="w-5 h-5 text-primary" />
+          {/* Header */}
+          <div className="p-6 border-b border-white/5 flex items-center justify-between w-full">
+            <div className="flex items-center gap-2 text-white/80 font-bold select-none">
+              <History className="w-5 h-5 text-primary animate-pulse" />
               History
             </div>
             <div className="flex items-center gap-1">
@@ -34,35 +68,37 @@ export default function HistorySidebar() {
               </button>
               <button 
                 onClick={() => setSidebarOpen(false)}
-                className="p-2 hover:bg-white/5 rounded-lg text-white/20 hover:text-white transition-all lg:hidden"
+                className="p-2 hover:bg-white/5 rounded-lg text-white/20 hover:text-white transition-all"
+                title="Collapse Sidebar"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3 min-w-[320px]">
+          {/* History Item List */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3 w-full">
             <AnimatePresence mode="popLayout">
               {history.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-40 text-white/20 text-center">
+                <div className="flex flex-col items-center justify-center h-40 text-white/20 text-center select-none">
                   <Clock className="w-8 h-8 mb-2 opacity-50" />
                   <p className="text-xs">No history yet</p>
                 </div>
               ) : (
                 history.map((item) => (
                   <motion.button
-                    layout
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    key={item.id}
-                    onClick={() => {
-                      loadFromHistory(item);
-                      if (window.innerWidth < 1024) setSidebarOpen(false); // Close on mobile after selection
-                    }}
-                    className="w-full text-left p-3 rounded-xl bg-white/5 border border-white/5 hover:border-primary/30 hover:bg-white/10 transition-all group"
+                     layout
+                     initial={{ opacity: 0, x: -20 }}
+                     animate={{ opacity: 1, x: 0 }}
+                     exit={{ opacity: 0, scale: 0.95 }}
+                     key={item.id}
+                     onClick={() => {
+                       loadFromHistory(item);
+                       if (window.innerWidth < 1024) setSidebarOpen(false); // Close on mobile after selection
+                     }}
+                     className="w-full text-left p-3 rounded-xl bg-white/5 border border-white/5 hover:border-primary/30 hover:bg-white/10 transition-all group"
                   >
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center justify-between mb-1 select-none">
                       <span className={cn(
                         "text-[10px] font-bold px-1.5 py-0.5 rounded",
                         item.method === 'GET' ? "bg-emerald-500/20 text-emerald-400" :
@@ -71,14 +107,14 @@ export default function HistorySidebar() {
                       )}>
                         {item.method}
                       </span>
-                      <span className="text-[10px] text-white/20">
+                      <span className="text-[10px] text-white/25 font-bold font-mono">
                         {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
-                    <div className="text-xs text-white/60 truncate font-mono mb-2">
+                    <div className="text-xs text-white/60 truncate font-mono mb-2 select-all leading-normal">
                       {item.url}
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between select-none">
                       {item.status && (
                         <span className={cn(
                           "text-[10px] font-bold",
@@ -94,6 +130,16 @@ export default function HistorySidebar() {
               )}
             </AnimatePresence>
           </div>
+
+          {/* Drag Resize Handle */}
+          <div
+            onMouseDown={startResizing}
+            className={cn(
+              "absolute top-0 right-0 w-1 h-full cursor-col-resize z-50 transition-all hover:bg-primary/20",
+              isResizing ? "bg-primary/40 w-1.5" : "bg-transparent"
+            )}
+            title="Drag to resize sidebar"
+          />
         </motion.div>
       )}
     </AnimatePresence>
