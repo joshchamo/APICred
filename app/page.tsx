@@ -4,6 +4,7 @@ import RequestPanel from '@/components/RequestPanel';
 import ResponsePanel from '@/components/ResponsePanel';
 import HistorySidebar from '@/components/HistorySidebar';
 import EnvironmentManager from '@/components/EnvironmentManager';
+import { APICredLogo } from '@/components/APICredLogo';
 import { Zap, Menu, Layout, Settings, Globe, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useRequestStore } from '@/store/useRequestStore';
 import { useHasHydrated } from '@/hooks/useHasHydrated';
@@ -50,17 +51,11 @@ export default function Home() {
                 <Menu className="w-5 h-5 group-hover:scale-110 transition-transform" />
               </button>
             )}
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-amber-500 flex items-center justify-center shadow-lg shadow-rose-500/20">
-              <Zap className="w-5 h-5 text-white fill-white" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-black tracking-tight">ApiCred</h1>
-                <span className="px-1.5 py-0.5 rounded-md bg-primary/20 text-primary text-[8px] font-black uppercase border border-primary/20">
-                  v1.2.0
-                </span>
-              </div>
-              <p className="text-[9px] uppercase tracking-[0.2em] text-white/30 font-bold">Studio Dashboard</p>
+            <div className="flex items-center gap-3">
+              <APICredLogo className="h-7 w-auto" />
+              <span className="px-1.5 py-0.5 rounded-md bg-primary/20 text-primary text-[8px] font-black uppercase border border-primary/20 select-none">
+                v1.12.1
+              </span>
             </div>
           </div>
 
@@ -106,7 +101,7 @@ export default function Home() {
               Professional Grade API Testing
             </p>
             <p className="text-[9px] text-white/40 font-bold uppercase tracking-widest">
-              v1.2.0 • Multi-Panel Studio • {new Date().toLocaleDateString()}
+              v1.12.1 • Multi-Panel Studio • {new Date().toLocaleDateString()}
             </p>
           </footer>
         </div>

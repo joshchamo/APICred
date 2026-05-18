@@ -1,0 +1,45 @@
+'use client';
+
+export function APICredLogo({ className = "h-8" }: { className?: string }) {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 225 60" 
+      className={`${className} text-white/90`}
+    >
+      <defs>
+        {/* Electric Indigo Brand Gradient */}
+        <linearGradient id="apicred-final-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#6366f1" />
+          <stop offset="100%" stop-color="#a855f7" />
+        </linearGradient>
+      </defs>
+
+      {/* Left Angle Bracket (<) */}
+      <path 
+        d="M 38 5 L 18 30 L 38 55" 
+        fill="none" 
+        stroke="url(#apicred-final-grad)" 
+        stroke-width="5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+      />
+
+      {/* Bold API Text Vectors */}
+      {/* Shifted to precisely center between the syntax brackets */}
+      <g transform="translate(48, 2.7)" fill="currentColor">
+        <path d="M 63.391 54.574 L 56.433 54.574 L 56.433 0.009 L 75.11 0.009 Q 81.482 0.009 85.602 2.334 Q 89.722 4.66 91.718 8.578 Q 93.713 12.497 93.713 17.367 Q 93.713 22.238 91.718 26.193 Q 89.722 30.148 85.62 32.492 Q 81.519 34.836 75.146 34.836 L 61.926 34.836 L 61.926 28.72 L 74.817 28.72 Q 79.138 28.72 81.775 27.237 Q 84.412 25.754 85.602 23.172 Q 86.792 20.59 86.792 17.367 Q 86.792 14.145 85.602 11.6 Q 84.412 9.054 81.757 7.59 Q 79.102 6.125 74.744 6.125 L 63.391 6.125 L 63.391 54.574 Z M 7.397 54.574 L 0 54.574 L 19.812 0.009 L 27.869 0.009 L 47.937 54.574 L 40.613 54.574 L 29.041 22.201 Q 27.979 19.198 26.569 14.712 Q 25.159 10.226 23.145 3.268 L 24.463 3.268 Q 22.485 10.299 21.039 14.859 Q 19.592 19.418 18.64 22.201 L 7.397 54.574 Z M 104.333 0.009 L 111.292 0.009 L 111.292 54.574 L 104.333 54.574 L 104.333 0.009 Z M 37.976 39.34 L 9.961 39.34 L 9.961 33.261 L 37.976 33.261 L 37.976 39.34 Z" />
+      </g>
+
+      {/* Right Self-Closing Slash and Bracket (/>) */}
+      <path 
+        d="M 168 55 L 180 5 M 186 5 L 206 30 L 186 55" 
+        fill="none" 
+        stroke="url(#apicred-final-grad)" 
+        stroke-width="5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+      />
+    </svg>
+  );
+}
