@@ -151,94 +151,96 @@ export default function EnvironmentManager({ isPermanent = false }: EnvironmentM
               <p className="text-xs text-white/50 leading-relaxed font-bold">
                 Wrap your variable keys in <span className="text-primary font-black">{"{{ ... }}"}</span> to inject them into any request field.
               </p>
-
-              {/* Collapsible Guide */}
-              <details className="group border border-white/10 rounded-2xl overflow-hidden bg-black/40 transition-all duration-300">
-                <summary className="px-4 py-3 text-[11px] font-black text-white/45 hover:text-white uppercase tracking-widest cursor-pointer select-none flex items-center justify-between transition-colors bg-white/[0.02] hover:bg-white/5">
-                  <span>Usage & Examples Guide</span>
-                  <span className="transition-transform duration-300 group-open:rotate-180 text-[8px] text-white/30">▼</span>
-                </summary>
-                <div className="p-5 border-t border-white/5 text-[11px] text-white/40 space-y-5 leading-relaxed font-medium bg-black/25">
-                  <div className="space-y-2">
-                    <p className="font-black text-white/60 text-[11px] uppercase tracking-wider">Example 1: PokéAPI</p>
-                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-1 font-mono text-[11px] text-white/30">
-                      <div><span className="text-primary font-bold">Key:</span> baseURL</div>
-                      <div><span className="text-primary font-bold">Value:</span> https://pokeapi.co/api/v2</div>
-                      <div className="pt-2 border-t border-white/5 text-white/50">
-                        <span className="text-emerald-400 font-bold">URL:</span> {"{{baseURL}}"} /pokemon/ditto
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <p className="font-black text-white/60 text-[11px] uppercase tracking-wider">Example 2: Mock Users API</p>
-                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-1 font-mono text-[11px] text-white/30">
-                      <div><span className="text-primary font-bold">Key:</span> host</div>
-                      <div><span className="text-primary font-bold">Value:</span> https://jsonplaceholder.typicode.com</div>
-                      <div><span className="text-primary font-bold">Key:</span> id</div>
-                      <div><span className="text-primary font-bold">Value:</span> 1</div>
-                      <div className="pt-2 border-t border-white/5 text-white/50">
-                        <span className="text-emerald-400 font-bold">URL:</span> {"{{host}}"} /users/ {"{{id}}"}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <p className="font-black text-white/60 text-[11px] uppercase tracking-wider">Example 3: Query Parameter Inject</p>
-                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-2 font-mono text-[11px] text-white/30">
-                      <div><span className="text-primary font-bold">Key:</span> limit</div>
-                      <div><span className="text-primary font-bold">Value:</span> 10</div>
-                      <div className="pt-2 border-t border-white/5 text-white/50 leading-normal">
-                        Use in <span className="text-sky-400 font-bold">Params Tab</span>:<br />
-                        <span className="text-white/60">Key:</span> limit $\rightarrow$ <span className="text-white/60">Value:</span> {"{{limit}}"}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <p className="font-black text-white/60 text-[11px] uppercase tracking-wider">Dynamic Variables (Postman Style)</p>
-                    <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-2 font-mono text-[11px] text-white/30 leading-normal">
-                      <p className="text-[11px] text-white/50 mb-2 font-sans font-bold">Inject mock data directly without setting any keys! Prefix with <span className="text-primary font-black">$</span>:</p>
-                      <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
-                        <span className="text-primary font-bold">{"{{$randomUUID}}"}</span>
-                        <span className="text-white/50 italic">Unique UUID v4</span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
-                        <span className="text-primary font-bold">{"{{$randomEmail}}"}</span>
-                        <span className="text-white/50 italic">Mock Email</span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
-                        <span className="text-primary font-bold">{"{{$timestamp}}"}</span>
-                        <span className="text-white/50 italic">UNIX Timestamp</span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
-                        <span className="text-primary font-bold">{"{{$randomName}}"}</span>
-                        <span className="text-white/50 italic">Full Name</span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
-                        <span className="text-primary font-bold">{"{{$randomInt}}"}</span>
-                        <span className="text-white/50 italic">Int [0-999]</span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
-                        <span className="text-primary font-bold">{"{{$randomBool}}"}</span>
-                        <span className="text-white/50 italic">true / false</span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-1 py-1">
-                        <span className="text-primary font-bold">{"{{$randomPhone}}"}</span>
-                        <span className="text-white/50 italic">Phone Number</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </details>
             </div>
           </div>
         ) : (
-          <div className="h-full flex flex-col items-center justify-center text-center p-10 opacity-20">
+          <div className="py-10 flex flex-col items-center justify-center text-center opacity-25">
             <Globe className="w-12 h-12 mb-4" />
             <p className="text-xs font-bold">No Environment Selected</p>
           </div>
         )}
+
+        {/* Collapsible Guide (Persistent & Permanent) */}
+        <div className="mt-4 mx-2">
+          <details className="group border border-white/10 rounded-2xl overflow-hidden bg-black/40 transition-all duration-300">
+            <summary className="pl-6 pr-4 py-3 text-[11px] font-black text-white/45 hover:text-white uppercase tracking-widest cursor-pointer select-none flex items-center justify-between transition-colors bg-white/[0.02] hover:bg-white/5">
+              <span>Usage & Examples Guide</span>
+              <span className="transition-transform duration-300 group-open:rotate-180 text-[8px] text-white/30">▼</span>
+            </summary>
+            <div className="pl-7 pr-5 py-5 border-t border-white/5 text-[11px] text-white/40 space-y-5 leading-relaxed font-medium bg-black/25">
+              <div className="space-y-2">
+                <p className="font-black text-white/60 text-[11px] uppercase tracking-wider">Example 1: PokéAPI</p>
+                <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-1 font-mono text-[11px] text-white/30">
+                  <div><span className="text-primary font-bold">Key:</span> baseURL</div>
+                  <div><span className="text-primary font-bold">Value:</span> https://pokeapi.co/api/v2</div>
+                  <div className="pt-2 border-t border-white/5 text-white/50">
+                    <span className="text-emerald-400 font-bold">URL:</span> {"{{baseURL}}"} /pokemon/ditto
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="font-black text-white/60 text-[11px] uppercase tracking-wider">Example 2: Mock Users API</p>
+                <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-1 font-mono text-[11px] text-white/30">
+                  <div><span className="text-primary font-bold">Key:</span> host</div>
+                  <div><span className="text-primary font-bold">Value:</span> https://jsonplaceholder.typicode.com</div>
+                  <div><span className="text-primary font-bold">Key:</span> id</div>
+                  <div><span className="text-primary font-bold">Value:</span> 1</div>
+                  <div className="pt-2 border-t border-white/5 text-white/50">
+                    <span className="text-emerald-400 font-bold">URL:</span> {"{{host}}"} /users/ {"{{id}}"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="font-black text-white/60 text-[11px] uppercase tracking-wider">Example 3: Query Parameter Inject</p>
+                <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-2 font-mono text-[11px] text-white/30">
+                  <div><span className="text-primary font-bold">Key:</span> limit</div>
+                  <div><span className="text-primary font-bold">Value:</span> 10</div>
+                  <div className="pt-2 border-t border-white/5 text-white/50 leading-normal">
+                    Use in <span className="text-sky-400 font-bold">Params Tab</span>:<br />
+                    <span className="text-white/60">Key:</span> limit $\rightarrow$ <span className="text-white/60">Value:</span> {"{{limit}}"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="font-black text-white/60 text-[11px] uppercase tracking-wider">Dynamic Variables (Postman Style)</p>
+                <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-2 font-mono text-[11px] text-white/30 leading-normal">
+                  <p className="text-[11px] text-white/50 mb-2 font-sans font-bold">Inject mock data directly without setting any keys! Prefix with <span className="text-primary font-black">$</span>:</p>
+                  <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
+                    <span className="text-primary font-bold">{"{{$randomUUID}}"}</span>
+                    <span className="text-white/50 italic">Unique UUID v4</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
+                    <span className="text-primary font-bold">{"{{$randomEmail}}"}</span>
+                    <span className="text-white/50 italic">Mock Email</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
+                    <span className="text-primary font-bold">{"{{$timestamp}}"}</span>
+                    <span className="text-white/50 italic">UNIX Timestamp</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
+                    <span className="text-primary font-bold">{"{{$randomName}}"}</span>
+                    <span className="text-white/50 italic">Full Name</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
+                    <span className="text-primary font-bold">{"{{$randomInt}}"}</span>
+                    <span className="text-white/50 italic">Int [0-999]</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 py-1 border-b border-white/5">
+                    <span className="text-primary font-bold">{"{{$randomBool}}"}</span>
+                    <span className="text-white/50 italic">true / false</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 py-1">
+                    <span className="text-primary font-bold">{"{{$randomPhone}}"}</span>
+                    <span className="text-white/50 italic">Phone Number</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
       </div>
 
       {/* Global Action Footer */}
