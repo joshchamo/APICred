@@ -161,13 +161,16 @@ export default function EnvironmentManager({ isPermanent = false }: EnvironmentM
         )}
 
         {/* Collapsible Guide (Persistent & Permanent) */}
-        <div className="mt-4 mx-2">
-          <details className="group border border-white/10 rounded-2xl overflow-hidden bg-black/40 transition-all duration-300">
-            <summary className="pl-6 pr-4 py-3 text-[11px] font-black text-white/45 hover:text-white uppercase tracking-widest cursor-pointer select-none flex items-center justify-between transition-colors bg-white/[0.02] hover:bg-white/5">
+        <div className="mt-4 ml-6 mr-3">
+          <details 
+            dir="ltr" 
+            className="group text-left border border-white/10 rounded-2xl overflow-hidden bg-black/40 transition-all duration-300"
+          >
+            <summary className="pl-8 pr-4 py-3 text-[11px] font-black text-white/45 hover:text-white uppercase tracking-widest cursor-pointer select-none flex items-center justify-between transition-colors bg-white/[0.02] hover:bg-white/5">
               <span>Usage & Examples Guide</span>
               <span className="transition-transform duration-300 group-open:rotate-180 text-[8px] text-white/30">▼</span>
             </summary>
-            <div className="pl-7 pr-5 py-5 border-t border-white/5 text-[11px] text-white/40 space-y-5 leading-relaxed font-medium bg-black/25">
+            <div className="pl-9 pr-5 py-5 border-t border-white/5 text-[11px] text-white/40 space-y-5 leading-relaxed font-medium bg-black/25">
               <div className="space-y-2">
                 <p className="font-black text-white/60 text-[11px] uppercase tracking-wider">Example 1: PokéAPI</p>
                 <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl space-y-1 font-mono text-[11px] text-white/30">
