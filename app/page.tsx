@@ -54,7 +54,7 @@ export default function Home() {
             <div className="flex items-center gap-3">
               <APICredLogo className="h-7 w-auto" />
               <span className="px-1.5 py-0.5 rounded-md bg-primary/20 text-primary text-[8px] font-black uppercase border border-primary/20 select-none">
-                v1.12.1
+                v1.14.3
               </span>
             </div>
           </div>
@@ -101,7 +101,7 @@ export default function Home() {
               Professional Grade API Testing
             </p>
             <p className="text-[9px] text-white/40 font-bold uppercase tracking-widest">
-              v1.12.1 • Multi-Panel Studio • {new Date().toLocaleDateString()}
+              v1.14.3 • Multi-Panel Studio • {new Date().toLocaleDateString()}
             </p>
           </footer>
         </div>

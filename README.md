@@ -1,7 +1,7 @@
-# 🔮 APICred
-
 <div align="center">
-  <img src="./public/logo.png" alt="APICred Logo" width="120" style="border-radius: 24px; margin-bottom: 20px;" onerror="this.style.display='none'" />
+  <a href="https://apicred.vercel.app">
+    <img src="./public/logo.svg" alt="APICred Logo" width="260" style="margin-bottom: 20px;" />
+  </a>
   <p><strong>A hyper-fast, zero-overhead, security-first API testing client. No installs. No accounts. No cloud databases.</strong></p>
   
   <p>
@@ -10,7 +10,7 @@
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/Version-1.11.0-blueviolet?style=for-the-badge&logo=semver" alt="Version 1.11.0" />
+    <img src="https://img.shields.io/badge/Version-1.14.3-blueviolet?style=for-the-badge&logo=semver" alt="Version 1.14.3" />
     <img src="https://img.shields.io/badge/React-Next.js%2016-000000?style=for-the-badge&logo=nextdotjs" alt="Next.js 16" />
     <img src="https://img.shields.io/badge/TypeScript-5.x-blue?style=for-the-badge&logo=typescript" alt="TypeScript 5" />
     <img src="https://img.shields.io/badge/State-Zustand%205-orange?style=for-the-badge&logo=react" alt="Zustand" />
